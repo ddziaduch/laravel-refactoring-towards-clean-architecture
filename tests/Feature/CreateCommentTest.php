@@ -28,5 +28,15 @@ class CreateCommentTest extends TestCase
             ],
         );
         $response->assertStatus(201);
+        $response->assertJson([
+            'id' => 1,
+            'body' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            'author' => [
+                'username' => $user->username,
+                'bio' => $user->bio,
+                'image' => $user->image,
+                'following' => $user->followers->contains($user->id),
+            ]
+        ]);
     }
 }

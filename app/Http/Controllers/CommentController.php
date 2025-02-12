@@ -8,13 +8,17 @@ use App\Http\Resources\CommentCollection;
 use App\Http\Resources\CommentResource;
 use App\Models\Article;
 use App\Models\Comment;
+use Clean\Application\Port\UseCase\CreateCommentUseCasePort;
+use Illuminate\Http\JsonResponse;
 
 class CommentController extends Controller
 {
     protected Comment $comment;
 
-    public function __construct(Comment $comment)
-    {
+    public function __construct(
+        Comment $comment,
+        private readonly CreateCommentUseCasePort $createCommentUseCasePort,
+    ) {
         $this->comment = $comment;
     }
 
@@ -25,9 +29,16 @@ class CommentController extends Controller
 
     public function store(Article $article, StoreRequest $request)
     {
-        $comment = $article->comments()->create(['body' => $request->comment['body'], 'user_id' => auth()->id()]);
+        // create in the new way
+        $id = $this->createCommentUseCasePort->create(
+            $article->id,
+            $request->comment['body'],
+            auth()->id(),
+        );
+        // retrieve in the old way
+        $comment = $article->comments()->find($id);
 
-        return new CommentResource($comment);
+        return new JsonResponse(new CommentResource($comment), 201);
     }
 
     public function destroy(Article $article, Comment $comment, DestroyRequest $request): void
