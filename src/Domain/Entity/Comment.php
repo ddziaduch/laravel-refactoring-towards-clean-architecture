@@ -7,7 +7,7 @@ class Comment
     private ?int $id = null;
 
     public function __construct(
-        public readonly int $articleId,
+        public readonly string $articleSlug,
         private string $body,
         public readonly int $authorId
     ) {

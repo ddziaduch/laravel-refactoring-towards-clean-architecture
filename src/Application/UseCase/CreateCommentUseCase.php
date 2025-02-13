@@ -16,9 +16,9 @@ final class CreateCommentUseCase implements CreateCommentUseCasePort
     ) {
     }
 
-    public function create(int $articleId, string $commentBody, int $authorId): CommentReadModel
+    public function create(string $articleSlug, string $commentBody, int $authorId): CommentReadModel
     {
-        $comment = new Comment($articleId, $commentBody, $authorId);
+        $comment = new Comment($articleSlug, $commentBody, $authorId);
 
         $this->commentRepository->save($comment);
 

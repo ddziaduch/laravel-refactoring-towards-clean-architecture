@@ -6,5 +6,5 @@ use Clean\Application\ReadModel\CommentReadModel;
 
 interface CreateCommentUseCasePort
 {
-    public function create(int $articleId, string $commentBody, int $authorId): CommentReadModel;
+    public function create(string $articleSlug, string $commentBody, int $authorId): CommentReadModel;
 }

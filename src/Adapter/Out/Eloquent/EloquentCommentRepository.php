@@ -10,7 +10,7 @@ class EloquentCommentRepository implements CommentRepository
 {
     public function save(Comment $comment): void
     {
-        $id = Article::where('id', $comment->articleId)
+        $id = Article::where('slug', $comment->articleSlug)
             ->get()
             ->first()
             ->comments()

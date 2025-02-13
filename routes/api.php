@@ -1,5 +1,6 @@
 <?php
 
+use Clean\Adapter\In\Http\CreateCommentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
@@ -42,7 +43,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('articles')->group(function () {
-        Route::post('{article}/comments', [CommentController::class, 'store']);
+        Route::post('{article}/comments', CreateCommentController::class);
         Route::delete('{article}/comments/{comment}', [CommentController::class, 'destroy']);
     });
 });
