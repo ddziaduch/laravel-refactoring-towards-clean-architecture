@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Comment\DestroyRequest;
 use App\Http\Requests\Comment\StoreRequest;
 use App\Http\Resources\CommentCollection;
-use App\Http\Resources\CommentResource;
+use App\Http\Resources\CommentReadModelResource;
 use App\Models\Article;
 use App\Models\Comment;
 use Clean\Application\Port\UseCase\CreateCommentUseCasePort;
@@ -27,18 +27,15 @@ class CommentController extends Controller
         return new CommentCollection($article->comments);
     }
 
-    public function store(Article $article, StoreRequest $request)
+    public function store(Article $article, StoreRequest $request): JsonResponse
     {
-        // create in the new way
-        $id = $this->createCommentUseCasePort->create(
+        $commentReadModel = $this->createCommentUseCasePort->create(
             $article->id,
             $request->comment['body'],
             auth()->id(),
         );
-        // retrieve in the old way
-        $comment = $article->comments()->find($id);
 
-        return new JsonResponse(new CommentResource($comment), 201);
+        return new JsonResponse(new CommentReadModelResource($commentReadModel), 201);
     }
 
     public function destroy(Article $article, Comment $comment, DestroyRequest $request): void
