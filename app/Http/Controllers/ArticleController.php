@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Article\DestroyRequest;
 use App\Http\Requests\Article\FeedRequest;
 use App\Http\Requests\Article\IndexRequest;
 use App\Http\Requests\Article\StoreRequest;
@@ -59,11 +58,6 @@ class ArticleController extends Controller
         return $this->articleResponse($article);
     }
 
-    public function destroy(Article $article, DestroyRequest $request): void
-    {
-        $article->delete();
-    }
-
     public function favorite(Article $article): ArticleResource
     {
         $article->users()->attach(auth()->id());
@@ -77,7 +71,7 @@ class ArticleController extends Controller
 
         return $this->articleResponse($article);
     }
-    
+
     protected function syncTags(Article $article): void
     {
         $this->articleService->syncTags($article, $this->request->validated()['article']['tagList'] ?? []);
