@@ -1,5 +1,6 @@
 <?php
 
+use Clean\Adapter\In\Http\CreateArticleHttpController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
@@ -34,7 +35,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('articles')->group(function () {
-        Route::post('/', [ArticleController::class, 'store']);
+        Route::post('/', CreateArticleHttpController::class);
         Route::put('{article}', [ArticleController::class, 'update']);
         Route::delete('{article}', [ArticleController::class, 'destroy']);
         Route::post('{article}/favorite', [ArticleController::class, 'favorite']);
