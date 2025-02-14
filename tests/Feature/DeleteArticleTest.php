@@ -20,8 +20,9 @@ class DeleteArticleTest extends TestCase
         $article = Article::factory()->create(['user_id' => $user->id]);
         assert($article instanceof Article);
 
-        $response = $this->actingAs($user)->deleteJson(sprintf("api/articles/%s", $article->slug));
-        $response->assertStatus(200);
+        $this->actingAs($user)->deleteJson(sprintf("api/articles/%s", $article->slug))->assertStatus(200);
+        $this->actingAs($user)->getJson(sprintf("api/articles/%s", $article->slug))->assertStatus(404);
+        $this->actingAs($user)->deleteJson(sprintf("api/articles/%s", $article->slug))->assertStatus(404);
     }
 
     public function testNotFound(): void

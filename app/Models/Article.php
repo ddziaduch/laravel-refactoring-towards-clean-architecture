@@ -10,11 +10,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * @property string $slug
+ * @property int $user_id
+ * @property bool $is_removed
+ */
 class Article extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'body'];
+    protected $attributes = [
+        'is_removed' => false,
+    ];
+
+    protected $fillable = ['title', 'description', 'body', 'is_removed'];
 
     public function getRouteKeyName(): string
     {

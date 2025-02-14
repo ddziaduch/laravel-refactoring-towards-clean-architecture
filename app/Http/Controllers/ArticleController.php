@@ -11,6 +11,7 @@ use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use App\Models\User;
 use App\Services\ArticleService;
+use Illuminate\Http\JsonResponse;
 
 class ArticleController extends Controller
 {
@@ -35,8 +36,11 @@ class ArticleController extends Controller
         return new ArticleCollection($this->article->getFiltered($request->validated()));
     }
 
-    public function show(Article $article): ArticleResource
+    public function show(Article $article): ArticleResource | JsonResponse
     {
+        if ($article->is_removed) {
+            return new JsonResponse(status: 404);
+        }
         return $this->articleResponse($article);
     }
 

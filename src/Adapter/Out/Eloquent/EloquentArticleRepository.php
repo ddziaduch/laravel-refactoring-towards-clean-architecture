@@ -4,22 +4,40 @@ declare(strict_types = 1);
 
 namespace Clean\Adapter\Out\Eloquent;
 
-use App\Models\Article;
+use App\Models\Article as EloquentArticle;
 use Clean\Application\Exception\ArticleDoesNotExist;
 use Clean\Application\Port\Out\ArticleRepository;
+use Clean\Domain\Entity\Article as DomainArticle;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EloquentArticleRepository implements ArticleRepository
 {
-    public function delete(int $authorId, string $articleSlug): void
+    public function getBySlug(string $articleSlug): DomainArticle
     {
         try {
-            Article::where('slug', $articleSlug)
-                ->where('user_id', $authorId)
-                ->firstOrFail()
-                ->delete();
+            $eloquentArticle = EloquentArticle::where('slug', $articleSlug)
+                ->where('is_removed', false)
+                ->firstOrFail();
         } catch (ModelNotFoundException) {
-            throw ArticleDoesNotExist::forAuthorIdAndSlug($authorId, $articleSlug);
+            throw ArticleDoesNotExist::forSlug($articleSlug);
         }
+
+        assert($eloquentArticle instanceof EloquentArticle);
+        return new DomainArticle(
+            $eloquentArticle->slug,
+            $eloquentArticle->user_id,
+        );
+    }
+
+    public function save(DomainArticle $article): void
+    {
+        try {
+            $eloquentArticle = EloquentArticle::where('slug', $article->slug)->firstOrFail();
+        } catch (ModelNotFoundException) {
+            throw new \LogicException(sprintf('Expected the article with slug %s to exist on this stage', $article->slug));
+        }
+
+        assert($eloquentArticle instanceof EloquentArticle);
+        $eloquentArticle->update(['is_removed' => $article->isRemoved()]);
     }
 }
