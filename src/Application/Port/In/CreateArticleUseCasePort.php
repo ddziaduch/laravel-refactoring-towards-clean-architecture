@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Clean\Application\Port\In;
 
-use App\Models\Article;
+use Clean\Application\ReadModel\ArticleReadModel;
 
 interface CreateArticleUseCasePort
 {
@@ -13,5 +13,5 @@ interface CreateArticleUseCasePort
         string $description,
         string $body,
         string ...$tagList
-    ): Article;
+    ): ArticleReadModel;
 }

@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Clean\Adapter\In\Http;
 
 use App\Http\Requests\Article\StoreRequest;
-use App\Http\Resources\ArticleResource;
-use App\Models\Article;
 use Clean\Application\Port\In\CreateArticleUseCasePort;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\JsonResponse;
 
 final class CreateArticleHttpController
 {
@@ -19,10 +18,10 @@ final class CreateArticleHttpController
     {
     }
 
-    public function __invoke(StoreRequest $request): ArticleResource
+    public function __invoke(StoreRequest $request): JsonResponse
     {
         $input = $request->validated()['article'];
-        $article = ($this->useCase)(
+        $articleReadModel = ($this->useCase)(
             $this->guard->id(),
             $input['title'],
             $input['description'],
@@ -30,11 +29,8 @@ final class CreateArticleHttpController
             ...($input['tagList'] ?? []),
         );
 
-        return $this->articleResponse($article);
-    }
-
-    private function articleResponse(Article $article): ArticleResource
-    {
-        return new ArticleResource($article->load('user', 'users', 'tags', 'user.followers'));
+        return (new CreatedArticleReadModelResource($articleReadModel))
+            ->toResponse($request)
+            ->setStatusCode(201);
     }
 }
