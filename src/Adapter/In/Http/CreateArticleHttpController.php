@@ -7,20 +7,26 @@ namespace Clean\Adapter\In\Http;
 use App\Http\Requests\Article\StoreRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
-use App\Services\ArticleService;
+use Clean\Application\Port\In\CreateArticleUseCasePort;
 
 final class CreateArticleHttpController
 {
-
     public function __construct(
-        private ArticleService $articleService,
-    ) {
+        private readonly CreateArticleUseCasePort $useCase,
+    )
+    {
     }
+
     public function __invoke(StoreRequest $request): ArticleResource
     {
-        $article = auth()->user()->articles()->create($request->validated()['article']);
-
-        $this->articleService->syncTags($article, $request->validated()['article']['tagList'] ?? []);
+        $input = $request->validated()['article'];
+        $article = ($this->useCase)(
+            auth()->id(),
+            $input['title'],
+            $input['description'],
+            $input['body'],
+            ...($input['tagList'] ?? []),
+        );
 
         return $this->articleResponse($article);
     }

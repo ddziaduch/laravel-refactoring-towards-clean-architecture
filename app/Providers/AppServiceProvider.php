@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Clean\Application\Port\In\CreateArticleUseCasePort;
+use Clean\Application\UseCase\CreateArticleUseCase;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(CreateArticleUseCasePort::class, CreateArticleUseCase::class);
     }
 
     /**
