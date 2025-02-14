@@ -8,11 +8,13 @@ use App\Http\Requests\Article\StoreRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use Clean\Application\Port\In\CreateArticleUseCasePort;
+use Illuminate\Contracts\Auth\Guard;
 
 final class CreateArticleHttpController
 {
     public function __construct(
         private readonly CreateArticleUseCasePort $useCase,
+        private readonly Guard $guard,
     )
     {
     }
@@ -21,7 +23,7 @@ final class CreateArticleHttpController
     {
         $input = $request->validated()['article'];
         $article = ($this->useCase)(
-            auth()->id(),
+            $this->guard->id(),
             $input['title'],
             $input['description'],
             $input['body'],
