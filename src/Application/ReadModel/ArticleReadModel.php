@@ -7,6 +7,7 @@ namespace Clean\Application\ReadModel;
 final class ArticleReadModel
 {
     public function __construct(
+        public readonly int $id,
         public readonly string $slug,
         public readonly string $title,
         public readonly string $description,
@@ -18,8 +19,6 @@ final class ArticleReadModel
         public readonly \DateTime $createdAt,
         public readonly \DateTime $updatedAt,
         public readonly int $favoritesCount,
-        // todo: rethink this, not sure whether it should be here
-        public readonly bool $favorited,
         public readonly ProfileReadModel $author,
     ) {
     }

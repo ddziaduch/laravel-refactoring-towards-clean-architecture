@@ -17,6 +17,7 @@ final class EloquentArticleReadModelFinder implements ArticleReadModelFinder
         $user = $eloquentArticle->user;
 
         return new ArticleReadModel(
+            $eloquentArticle->id,
             $eloquentArticle->slug,
             $eloquentArticle->title,
             $eloquentArticle->description,
@@ -25,14 +26,11 @@ final class EloquentArticleReadModelFinder implements ArticleReadModelFinder
             $eloquentArticle->created_at,
             $eloquentArticle->updated_at,
             (int) $eloquentArticle->users_count,
-            // inject here current user
-            $eloquentArticle->users->contains($user->id),
             new ProfileReadModel(
+                $user->id,
                 $user->username,
                 $user->bio,
                 $user->image,
-                // inject here current user
-                $user->followers->contains($user->id),
             ),
         );
     }

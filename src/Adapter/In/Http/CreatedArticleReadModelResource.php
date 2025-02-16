@@ -2,7 +2,9 @@
 
 namespace Clean\Adapter\In\Http;
 
+use App\Models\User;
 use Clean\Application\ReadModel\ArticleReadModel;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -12,8 +14,36 @@ final class CreatedArticleReadModelResource extends JsonResource
 {
     public static $wrap = 'article';
 
+    public function __construct(
+        ArticleReadModel $resource,
+        private readonly Guard $guard,
+    ) {
+        parent::__construct($resource);
+    }
+
     public function toArray($request): array
     {
-        return json_decode(json_encode($this->resource), associative: true);
+        $user = $this->guard->user();
+        assert($user instanceof User);
+
+        return [
+            'slug' => $this->resource->slug,
+            'title' => $this->resource->title,
+            'description' => $this->resource->description,
+            'body' => $this->resource->body,
+            'tagList' => $this->resource->tagList,
+            'createdAt' => $this->resource->createdAt,
+            'updatedAt' => $this->resource->updatedAt,
+            'favoritesCount' => $this->resource->favoritesCount,
+            'favorited' => $user !== null
+                ? $user->favoritedArticles->contains($this->resource->id)
+                : false,
+            'author' => [
+                'username' => $this->resource->author->username,
+                'bio' => $this->resource->author->bio,
+                'image' => $this->resource->author->image,
+                'following' => $user->following->contains($this->resource->author->id),
+            ],
+        ];
     }
 }

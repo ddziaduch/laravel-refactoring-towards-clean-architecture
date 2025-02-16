@@ -14,8 +14,7 @@ final class CreateArticleHttpController
     public function __construct(
         private readonly CreateArticleUseCasePort $useCase,
         private readonly Guard $guard,
-    )
-    {
+    ) {
     }
 
     public function __invoke(StoreRequest $request): JsonResponse
@@ -29,7 +28,7 @@ final class CreateArticleHttpController
             ...($input['tagList'] ?? []),
         );
 
-        return (new CreatedArticleReadModelResource($articleReadModel))
+        return (new CreatedArticleReadModelResource($articleReadModel, $this->guard))
             ->toResponse($request)
             ->setStatusCode(201);
     }
