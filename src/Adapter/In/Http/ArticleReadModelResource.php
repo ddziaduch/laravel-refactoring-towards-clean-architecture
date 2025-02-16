@@ -10,7 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @property ArticleReadModel $resource
  */
-final class CreatedArticleReadModelResource extends JsonResource
+final class ArticleReadModelResource extends JsonResource
 {
     public static $wrap = 'article';
 
@@ -24,7 +24,7 @@ final class CreatedArticleReadModelResource extends JsonResource
     public function toArray($request): array
     {
         $user = $this->guard->user();
-        assert($user instanceof User);
+        assert($user instanceof User || $user === null);
 
         return [
             'slug' => $this->resource->slug,
@@ -42,7 +42,9 @@ final class CreatedArticleReadModelResource extends JsonResource
                 'username' => $this->resource->author->username,
                 'bio' => $this->resource->author->bio,
                 'image' => $this->resource->author->image,
-                'following' => $user->following->contains($this->resource->author->id),
+                'following' => $user !== null
+                    ? $user->following->contains($this->resource->author->id)
+                    : false,
             ],
         ];
     }

@@ -28,7 +28,7 @@ final class CreateArticleHttpController
             ...($input['tagList'] ?? []),
         );
 
-        return (new CreatedArticleReadModelResource($articleReadModel, $this->guard))
+        return (new ArticleReadModelResource($articleReadModel, $this->guard))
             ->toResponse($request)
             ->setStatusCode(201);
     }

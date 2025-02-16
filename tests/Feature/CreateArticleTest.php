@@ -27,10 +27,19 @@ class CreateArticleTest extends TestCase
         ]);
         $postResponse->assertStatus(201)->assertJson([
             'article' => [
+                'slug' => 'test-title',
                 'title' => 'test title',
-                'body' => 'test body',
                 'description' => 'test description',
+                'body' => 'test body',
                 'tagList' => ['test', 'tag'],
+                'favoritesCount' => 0,
+                'favorited' => false,
+                'author' => [
+                    'username' => $user->username,
+                    'bio' => $user->bio,
+                    'image' => $user->image,
+                    'following' => false,
+                ],
             ],
         ]);
         $slug = $postResponse->json()['article']['slug'];
