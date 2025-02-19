@@ -4,11 +4,20 @@ namespace Clean\Application\ReadModel;
 
 class ProfileReadModel
 {
+    public string $username;
+    public ?string $bio;
+    public ?string $image;
+    public bool $following;
+
     public function __construct(
-        public readonly string $username,
-        public readonly ?string $bio,
-        public readonly ?string $image,
-        public readonly bool $following,
+        string $username,
+        ?string $bio,
+        ?string $image,
+        bool $following
     ) {
+        $this->following = $following;
+        $this->image = $image;
+        $this->bio = $bio;
+        $this->username = $username;
     }
 }

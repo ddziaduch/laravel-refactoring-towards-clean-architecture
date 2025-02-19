@@ -10,11 +10,11 @@ class EloquentCommentRepository implements CommentRepository
 {
     public function save(Comment $comment): void
     {
-        $id = Article::where('slug', $comment->articleSlug)
+        $id = Article::where('slug', $comment->articleSlug())
             ->get()
             ->first()
             ->comments()
-            ->create(['body' => $comment->body(), 'user_id' => $comment->authorId])
+            ->create(['body' => $comment->body(), 'user_id' => $comment->authorId()])
             ->id;
 
         $reflectionObject = new \ReflectionObject($comment);

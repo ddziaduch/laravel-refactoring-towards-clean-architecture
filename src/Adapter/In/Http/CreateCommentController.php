@@ -3,26 +3,36 @@
 namespace Clean\Adapter\In\Http;
 
 use App\Http\Controllers\Controller;
-use Clean\Adapter\In\Http\CreateCommentRequest;
+use Clean\Application\Port\Out\GetCommentReadModel;
 use Clean\Application\Port\UseCase\CreateCommentUseCasePort;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\JsonResponse;
 
 class CreateCommentController extends Controller
 {
+    private CreateCommentUseCasePort $createCommentUseCasePort;
+    private Guard $guard;
+    private GetCommentReadModel $getCommentReadModel;
+
     public function __construct(
-        private readonly Guard $guard,
-        private readonly CreateCommentUseCasePort $createCommentUseCasePort,
+        Guard $guard,
+        CreateCommentUseCasePort $createCommentUseCasePort,
+        GetCommentReadModel $getCommentReadModel
     ) {
+        $this->guard = $guard;
+        $this->createCommentUseCasePort = $createCommentUseCasePort;
+        $this->getCommentReadModel = $getCommentReadModel;
     }
 
     public function __invoke(CreateCommentRequest $request): JsonResponse
     {
-        $commentReadModel = $this->createCommentUseCasePort->create(
+        $id = $this->createCommentUseCasePort->create(
             $request->route('article'),
             $request->comment['body'],
             $this->guard->id(),
         );
+
+        $commentReadModel = $this->getCommentReadModel->get($id, $this->guard->id());
 
         return new JsonResponse(
             new CommentReadModelResource($commentReadModel),

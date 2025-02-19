@@ -2,14 +2,27 @@
 
 namespace Clean\Application\ReadModel;
 
+use DateTime;
+
 final class CommentReadModel
 {
+    public int $id;
+    public DateTime $createdAt;
+    public DateTime $updatedAt;
+    public string $body;
+    public ProfileReadModel $author;
+
     public function __construct(
-        public readonly int $id,
-        public readonly \DateTime $createdAt,
-        public readonly \DateTime $updatedAt,
-        public readonly string $body,
-        public readonly ProfileReadModel $author,
+        int $id,
+        DateTime $createdAt,
+        DateTime $updatedAt,
+        string $body,
+        ProfileReadModel $author
     ) {
+        $this->author = $author;
+        $this->body = $body;
+        $this->updatedAt = $updatedAt;
+        $this->createdAt = $createdAt;
+        $this->id = $id;
     }
 }

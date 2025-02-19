@@ -6,5 +6,5 @@ use Clean\Application\ReadModel\CommentReadModel;
 
 interface GetCommentReadModel
 {
-    public function get(int $id): CommentReadModel;
+    public function get(int $id, ?int $currentUserId = null): CommentReadModel;
 }
