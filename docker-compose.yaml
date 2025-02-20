@@ -8,14 +8,6 @@ services:
     volumes:
       # default in the JetBrains IDE
       - .:/opt/project
+      # skip vendor, if you have changed smth, please rebuild
+      - /opt/project/vendor
     restart: always
-  database:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: 'app'
-      POSTGRES_PASSWORD: '!ChangeMe!'
-      POSTGRES_USER: 'app'
-    volumes:
-      - ./storage/database/data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
