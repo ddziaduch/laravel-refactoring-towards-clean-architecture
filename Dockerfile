@@ -1,9 +1,10 @@
-FROM php:8.1-cli
+FROM php:7.4-cli
 
-RUN apt-get update && apt-get install -y libpq-dev git libzip-dev zip unzip
-RUN docker-php-ext-install pdo pdo_pgsql zip
-RUN pecl install xdebug
-RUN docker-php-ext-enable xdebug
+RUN apt-get update && apt-get install -y git libzip-dev zip unzip
+RUN docker-php-ext-install pdo zip
+RUN pecl channel-update pecl.php.net
+# RUN pecl install xdebug-3.1.5
+# RUN docker-php-ext-enable xdebug
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -14,7 +15,6 @@ COPY . .
 
 RUN composer install
 
-# Eksponowanie portu
 EXPOSE 8000
 
-CMD ["php", "artisan", "serve", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["php", "artisan", "serve", "--port", "8000"]
