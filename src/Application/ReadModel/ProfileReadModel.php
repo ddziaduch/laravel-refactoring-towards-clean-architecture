@@ -6,11 +6,20 @@ namespace Clean\Application\ReadModel;
 
 final class ProfileReadModel
 {
+    public int $id;
+    public string $username;
+    public ?string $bio;
+    public ?string $image;
+
     public function __construct(
-        public readonly int $id,
-        public readonly string $username,
-        public readonly ?string $bio,
-        public readonly ?string $image,
+        int $id,
+        string $username,
+        ?string $bio,
+        ?string $image
     ) {
+        $this->image = $image;
+        $this->bio = $bio;
+        $this->username = $username;
+        $this->id = $id;
     }
 }

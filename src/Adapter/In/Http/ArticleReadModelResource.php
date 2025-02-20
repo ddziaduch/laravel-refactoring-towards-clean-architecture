@@ -13,11 +13,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 final class ArticleReadModelResource extends JsonResource
 {
     public static $wrap = 'article';
+    private Guard $guard;
 
     public function __construct(
         ArticleReadModel $resource,
-        private readonly Guard $guard,
+        Guard $guard
     ) {
+        $this->guard = $guard;
         parent::__construct($resource);
     }
 

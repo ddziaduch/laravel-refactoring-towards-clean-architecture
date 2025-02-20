@@ -14,14 +14,14 @@ final class EloquentArticleRepository implements ArticleRepository
 {
     public function save(Article $article): EloquentArticle
     {
-        $user = User::where('id', $article->authorId)->firstOrFail();
+        $user = User::where('id', $article->authorId())->firstOrFail();
         assert($user instanceof User);
 
         $eloquentArticle = $user->articles()->create([
             'title' => $article->title(),
             'description' => $article->description(),
             'body' => $article->body(),
-            'slug' => $article->slug,
+            'slug' => $article->slug(),
         ]);
 
         $this->syncTags($eloquentArticle, ...$article->tagList());

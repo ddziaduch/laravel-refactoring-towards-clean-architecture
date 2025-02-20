@@ -13,12 +13,18 @@ use Clean\Domain\Entity\Article;
 
 final class CreateArticleUseCase implements CreateArticleUseCasePort
 {
+    private Slugger $slugger;
+    private ArticleRepository $repository;
+    private ArticleReadModelFinder $readModelFinder;
 
     public function __construct(
-        private readonly Slugger $slugger,
-        private readonly ArticleRepository $repository,
-        private readonly ArticleReadModelFinder $readModelFinder,
+        Slugger $slugger,
+        ArticleRepository $repository,
+        ArticleReadModelFinder $readModelFinder
     ) {
+        $this->readModelFinder = $readModelFinder;
+        $this->repository = $repository;
+        $this->slugger = $slugger;
     }
 
     public function __invoke(
@@ -26,7 +32,7 @@ final class CreateArticleUseCase implements CreateArticleUseCasePort
         string $title,
         string $description,
         string $body,
-        string ...$tagList,
+        string ...$tagList
     ): ArticleReadModel {
         $slug = $this->slugger->slugify($title);
         $article = new Article(

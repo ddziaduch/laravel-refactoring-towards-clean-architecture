@@ -6,21 +6,29 @@ namespace Clean\Domain\Entity;
 
 final class Article
 {
+    private string $slug;
+    private int $authorId;
     /**
      * @var string[]
      */
     private array $tagList;
+    private string $title;
+    private string $description;
+    private string $body;
 
     public function __construct(
-        // should be immutable, smth like id, right?
-        public readonly string $slug,
-        private string $title,
-        private string $description,
-        private string $body,
-        // I guess it should be immutable
-        public readonly int $authorId,
+        string $slug,
+        string $title,
+        string $description,
+        string $body,
+        int $authorId,
         string ...$tagList
     ) {
+        $this->authorId = $authorId;
+        $this->body = $body;
+        $this->description = $description;
+        $this->title = $title;
+        $this->slug = $slug;
         $this->tagList = $tagList;
     }
 
@@ -45,5 +53,15 @@ final class Article
     public function tagList(): array
     {
         return $this->tagList;
+    }
+
+    public function slug(): string
+    {
+        return $this->slug;
+    }
+
+    public function authorId(): int
+    {
+        return $this->authorId;
     }
 }

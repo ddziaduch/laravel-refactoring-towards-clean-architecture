@@ -6,20 +6,44 @@ namespace Clean\Application\ReadModel;
 
 final class ArticleReadModel
 {
+    public int $id;
+    public string $slug;
+    public string $title;
+    public string $description;
+    public string $body;
+    /**
+     * @var string[]
+     */
+    public array $tagList;
+    public \DateTime $createdAt;
+    public \DateTime $updatedAt;
+    public int $favoritesCount;
+    public ProfileReadModel $author;
+
+    /**
+     * @param string[] $tagList
+     */
     public function __construct(
-        public readonly int $id,
-        public readonly string $slug,
-        public readonly string $title,
-        public readonly string $description,
-        public readonly string $body,
-        /**
-         * @var string[]
-         */
-        public readonly array $tagList,
-        public readonly \DateTime $createdAt,
-        public readonly \DateTime $updatedAt,
-        public readonly int $favoritesCount,
-        public readonly ProfileReadModel $author,
+        int $id,
+        string $slug,
+        string $title,
+        string $description,
+        string $body,
+        array $tagList,
+        \DateTime $createdAt,
+        \DateTime $updatedAt,
+        int $favoritesCount,
+        ProfileReadModel $author
     ) {
+        $this->author = $author;
+        $this->favoritesCount = $favoritesCount;
+        $this->updatedAt = $updatedAt;
+        $this->createdAt = $createdAt;
+        $this->tagList = $tagList;
+        $this->body = $body;
+        $this->description = $description;
+        $this->title = $title;
+        $this->slug = $slug;
+        $this->id = $id;
     }
 }

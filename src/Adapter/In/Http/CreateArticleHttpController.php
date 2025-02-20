@@ -11,10 +11,15 @@ use Illuminate\Http\JsonResponse;
 
 final class CreateArticleHttpController
 {
+    private CreateArticleUseCasePort $useCase;
+    private Guard $guard;
+
     public function __construct(
-        private readonly CreateArticleUseCasePort $useCase,
-        private readonly Guard $guard,
+        CreateArticleUseCasePort $useCase,
+        Guard $guard
     ) {
+        $this->guard = $guard;
+        $this->useCase = $useCase;
     }
 
     public function __invoke(StoreRequest $request): JsonResponse
