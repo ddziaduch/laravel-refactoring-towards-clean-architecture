@@ -13,5 +13,5 @@ interface CreateArticleUseCasePort
         string $description,
         string $body,
         string ...$tagList
-    ): ArticleReadModel;
+    ): int;
 }

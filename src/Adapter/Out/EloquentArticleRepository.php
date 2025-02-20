@@ -9,6 +9,7 @@ use App\Models\Tag;
 use App\Models\User;
 use Clean\Application\Port\Out\ArticleRepository;
 use Clean\Domain\Entity\Article;
+use ReflectionObject;
 
 final class EloquentArticleRepository implements ArticleRepository
 {
@@ -27,6 +28,11 @@ final class EloquentArticleRepository implements ArticleRepository
         $this->syncTags($eloquentArticle, ...$article->tagList());
 
         $eloquentArticle->save();
+
+        $reflectionArticle = new ReflectionObject($article);
+        $reflectionIdProperty = $reflectionArticle->getProperty('id');
+        $reflectionIdProperty->setAccessible(true);
+        $reflectionIdProperty->setValue($article, $eloquentArticle->id);
 
         return $eloquentArticle;
     }

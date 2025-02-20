@@ -6,6 +6,7 @@ namespace Clean\Adapter\In\Http;
 
 use App\Http\Requests\Article\StoreRequest;
 use Clean\Application\Port\In\CreateArticleUseCasePort;
+use Clean\Application\Port\Out\ArticleReadModelGetter;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\JsonResponse;
 
@@ -13,27 +14,34 @@ final class CreateArticleHttpController
 {
     private CreateArticleUseCasePort $useCase;
     private Guard $guard;
+    private ArticleReadModelGetter $articleReadModelGetter;
 
     public function __construct(
         CreateArticleUseCasePort $useCase,
-        Guard $guard
+        Guard $guard,
+        ArticleReadModelGetter $articleReadModelGetter
     ) {
         $this->guard = $guard;
         $this->useCase = $useCase;
+        $this->articleReadModelGetter = $articleReadModelGetter;
     }
 
     public function __invoke(StoreRequest $request): JsonResponse
     {
         $input = $request->validated()['article'];
-        $articleReadModel = ($this->useCase)(
-            $this->guard->id(),
+        $authorId = $this->guard->id();
+
+        $id = ($this->useCase)(
+            $authorId,
             $input['title'],
             $input['description'],
             $input['body'],
             ...($input['tagList'] ?? []),
         );
 
-        return (new ArticleReadModelResource($articleReadModel, $this->guard))
+        $articleReadModel = $this->articleReadModelGetter->get($id, $authorId);
+
+        return (new ArticleReadModelResource($articleReadModel))
             ->toResponse($request)
             ->setStatusCode(201);
     }

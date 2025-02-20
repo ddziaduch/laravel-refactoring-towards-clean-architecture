@@ -6,7 +6,7 @@ namespace Clean\Application\Port\Out;
 
 use Clean\Application\ReadModel\ArticleReadModel;
 
-interface ArticleReadModelFinder
+interface ArticleReadModelGetter
 {
-    public function bySlug(string $slug): ArticleReadModel;
+    public function get(int $id, ?int $currentUserId): ArticleReadModel;
 }

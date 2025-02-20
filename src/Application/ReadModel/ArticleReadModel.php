@@ -19,6 +19,7 @@ final class ArticleReadModel
     public \DateTime $updatedAt;
     public int $favoritesCount;
     public ProfileReadModel $author;
+    public bool $favorited;
 
     /**
      * @param string[] $tagList
@@ -33,9 +34,11 @@ final class ArticleReadModel
         \DateTime $createdAt,
         \DateTime $updatedAt,
         int $favoritesCount,
+        bool $favorited,
         ProfileReadModel $author
     ) {
         $this->author = $author;
+        $this->favorited = $favorited;
         $this->favoritesCount = $favoritesCount;
         $this->updatedAt = $updatedAt;
         $this->createdAt = $createdAt;

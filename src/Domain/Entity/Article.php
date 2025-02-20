@@ -6,6 +6,7 @@ namespace Clean\Domain\Entity;
 
 final class Article
 {
+    private ?int $id;
     private string $slug;
     private int $authorId;
     /**
@@ -63,5 +64,10 @@ final class Article
     public function authorId(): int
     {
         return $this->authorId;
+    }
+
+    public function id(): ?int
+    {
+        return $this->id;
     }
 }

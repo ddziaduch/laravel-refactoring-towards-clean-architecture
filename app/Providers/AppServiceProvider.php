@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use Clean\Adapter\Out\EloquentArticleReadModelFinder;
+use Clean\Adapter\Out\EloquentArticleReadModelGetter;
 use Clean\Adapter\Out\EloquentArticleRepository;
 use Clean\Adapter\Out\StrSlugger;
 use Clean\Application\Port\In\CreateArticleUseCasePort;
-use Clean\Application\Port\Out\ArticleReadModelFinder;
+use Clean\Application\Port\Out\ArticleReadModelGetter;
 use Clean\Application\Port\Out\ArticleRepository;
 use Clean\Application\Port\Out\Slugger;
 use Clean\Application\UseCase\CreateArticleUseCase;
@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CreateArticleUseCasePort::class, CreateArticleUseCase::class);
         $this->app->bind(Slugger::class, StrSlugger::class);
         $this->app->bind(ArticleRepository::class, EloquentArticleRepository::class);
-        $this->app->bind(ArticleReadModelFinder::class, EloquentArticleReadModelFinder::class);
+        $this->app->bind(ArticleReadModelGetter::class, EloquentArticleReadModelGetter::class);
     }
 
     /**
