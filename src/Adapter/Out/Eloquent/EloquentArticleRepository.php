@@ -18,7 +18,7 @@ class EloquentArticleRepository implements ArticleRepository
                 ->where('user_id', $authorId)
                 ->firstOrFail()
                 ->delete();
-        } catch (ModelNotFoundException) {
+        } catch (ModelNotFoundException $exception) {
             throw ArticleDoesNotExist::forAuthorIdAndSlug($authorId, $articleSlug);
         }
     }
