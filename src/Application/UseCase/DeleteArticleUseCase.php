@@ -11,9 +11,12 @@ use Clean\Application\Port\In\DeleteArticleUseCasePort;
 
 final class DeleteArticleUseCase implements DeleteArticleUseCasePort
 {
+    private ArticleRepository $articleRepository;
+
     public function __construct(
-        private readonly ArticleRepository $articleRepository,
+        ArticleRepository $articleRepository
     ) {
+        $this->articleRepository = $articleRepository;
     }
 
     /**

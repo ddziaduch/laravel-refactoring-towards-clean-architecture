@@ -6,12 +6,16 @@ namespace Clean\Domain\Entity;
 
 final class Article
 {
+    private string $slug;
+    private int $authorId;
     private bool $removed = false;
 
     public function __construct(
-        public readonly string $slug,
-        public readonly int $authorId,
+        string $slug,
+        int $authorId
     ) {
+        $this->authorId = $authorId;
+        $this->slug = $slug;
     }
 
     public function wasCreatedBy(int $authorId): bool
@@ -27,5 +31,10 @@ final class Article
     public function isRemoved(): bool
     {
         return $this->removed;
+    }
+
+    public function slug(): string
+    {
+        return $this->slug;
     }
 }

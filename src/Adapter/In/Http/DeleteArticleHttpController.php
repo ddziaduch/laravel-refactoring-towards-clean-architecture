@@ -13,18 +13,23 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class DeleteArticleHttpController
 {
+    private DeleteArticleUseCasePort $useCase;
+    private Guard $guard;
+
     public function __construct(
-        private readonly DeleteArticleUseCasePort $useCase,
-        private readonly Guard $guard,
+        DeleteArticleUseCasePort $useCase,
+        Guard $guard
     ) {
+        $this->guard = $guard;
+        $this->useCase = $useCase;
     }
 
     public function __invoke(Request $request): Response
     {
         try {
             $this->useCase->handle(
-                authorId: $this->guard->id(),
-                articleSlug: (string) $request->route('article'),
+                $this->guard->id(),
+                (string) $request->route('article'),
             );
         } catch (ArticleDoesNotExist $e) {
             return new JsonResponse($e->getMessage(), Response::HTTP_NOT_FOUND);

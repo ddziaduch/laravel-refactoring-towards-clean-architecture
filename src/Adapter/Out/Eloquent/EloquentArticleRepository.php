@@ -18,23 +18,23 @@ class EloquentArticleRepository implements ArticleRepository
             $eloquentArticle = EloquentArticle::where('slug', $articleSlug)
                 ->where('is_removed', false)
                 ->firstOrFail();
-        } catch (ModelNotFoundException) {
+        } catch (ModelNotFoundException $exception) {
             throw ArticleDoesNotExist::forSlug($articleSlug);
         }
 
         assert($eloquentArticle instanceof EloquentArticle);
         return new DomainArticle(
             $eloquentArticle->slug,
-            $eloquentArticle->user_id,
+            (int) $eloquentArticle->user_id,
         );
     }
 
     public function save(DomainArticle $article): void
     {
         try {
-            $eloquentArticle = EloquentArticle::where('slug', $article->slug)->firstOrFail();
-        } catch (ModelNotFoundException) {
-            throw new \LogicException(sprintf('Expected the article with slug %s to exist on this stage', $article->slug));
+            $eloquentArticle = EloquentArticle::where('slug', $article->slug())->firstOrFail();
+        } catch (ModelNotFoundException $exception) {
+            throw new \LogicException(sprintf('Expected the article with slug %s to exist on this stage', $article->slug()));
         }
 
         assert($eloquentArticle instanceof EloquentArticle);

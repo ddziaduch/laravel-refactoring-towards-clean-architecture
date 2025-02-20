@@ -36,10 +36,13 @@ class ArticleController extends Controller
         return new ArticleCollection($this->article->getFiltered($request->validated()));
     }
 
-    public function show(Article $article): ArticleResource | JsonResponse
+    /**
+     * @return ArticleResource | JsonResponse
+     */
+    public function show(Article $article)
     {
         if ($article->is_removed) {
-            return new JsonResponse(status: 404);
+            return new JsonResponse(null, 404);
         }
         return $this->articleResponse($article);
     }
