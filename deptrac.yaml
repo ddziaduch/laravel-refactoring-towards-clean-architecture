@@ -1,0 +1,31 @@
+parameters:
+  paths:
+    - ./src
+  layers:
+    -   name: Domain
+        collectors:
+          -   type: classNameRegex
+              value: /^(.*)\\Domain\\*/
+    -   name: Adapter
+        collectors:
+          -   type: classNameRegex
+              value: /^(.*)\\Adapter\\*/
+    -   name: Application
+        collectors:
+          -   type: classNameRegex
+              value: /^(.*)\\Application\\*/
+    -   name: Framework
+        collectors:
+          - type: classNameRegex
+            value: /^(.*)\\Framework\\*/
+
+  ruleset:
+    Application:
+      - Domain
+    Adapter:
+      - Application
+      - Domain
+    Framework:
+      - Domain
+      - Application
+      - Adapter
