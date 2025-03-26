@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Clean\Adapter\In\Http;
+namespace Clean\Adapter\In\Http\Controller;
 
 use App\Http\Requests\Article\StoreRequest;
+use Clean\Adapter\In\Http\Resource\ArticleReadModelResource;
 use Clean\Application\Port\In\CreateArticleUseCasePort;
 use Clean\Application\Port\Out\ArticleReadModelGetter;
 use Illuminate\Contracts\Auth\Guard;

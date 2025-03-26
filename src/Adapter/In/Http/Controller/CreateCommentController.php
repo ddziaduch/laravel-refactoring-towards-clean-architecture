@@ -1,10 +1,12 @@
 <?php
 
-namespace Clean\Adapter\In\Http;
+namespace Clean\Adapter\In\Http\Controller;
 
 use App\Http\Controllers\Controller;
+use Clean\Adapter\In\Http\Resource\CommentReadModelResource;
+use Clean\Adapter\In\Http\Request\CreateCommentRequest;
+use Clean\Application\Port\In\CreateCommentUseCasePort;
 use Clean\Application\Port\Out\GetCommentReadModel;
-use Clean\Application\Port\UseCase\CreateCommentUseCasePort;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\JsonResponse;
 

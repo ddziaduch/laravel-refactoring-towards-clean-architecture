@@ -2,22 +2,17 @@
 
 namespace Clean\Application\UseCase;
 
+use Clean\Application\Port\In\CreateCommentUseCasePort;
 use Clean\Application\Port\Out\CommentRepository;
-use Clean\Application\Port\Out\GetCommentReadModel;
-use Clean\Application\Port\UseCase\CreateCommentUseCasePort;
-use Clean\Application\ReadModel\CommentReadModel;
 use Clean\Domain\Entity\Comment;
 
 final class CreateCommentUseCase implements CreateCommentUseCasePort
 {
     private CommentRepository $commentRepository;
-    private GetCommentReadModel $getCommentReadModel;
 
     public function __construct(
-        CommentRepository $commentRepository,
-        GetCommentReadModel $getCommentReadModel
+        CommentRepository $commentRepository
     ) {
-        $this->getCommentReadModel = $getCommentReadModel;
         $this->commentRepository = $commentRepository;
     }
 

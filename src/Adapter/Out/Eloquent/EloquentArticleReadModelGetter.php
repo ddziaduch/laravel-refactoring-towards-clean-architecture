@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Clean\Adapter\Out;
+namespace Clean\Adapter\Out\Eloquent;
 
 use App\Models\Article;
 use App\Models\User;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Clean\Adapter\In\Http;
+namespace Clean\Adapter\In\Http\Resource;
 
 use Clean\Application\ReadModel\CommentReadModel;
 use Illuminate\Http\Resources\Json\JsonResource;

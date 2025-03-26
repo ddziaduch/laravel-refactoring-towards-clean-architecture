@@ -1,19 +1,18 @@
 <?php
 
-namespace Clean\Adapter\In\Http;
+namespace Clean\Adapter\In\Http\Resource;
 
 use Clean\Application\ReadModel\ArticleReadModel;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/**
- * @property ArticleReadModel $resource
- */
 final class ArticleReadModelResource extends JsonResource
 {
     public static $wrap = 'article';
 
     public function toArray($request): array
     {
+        assert($this->resource instanceof ArticleReadModel);
+
         return [
             'slug' => $this->resource->slug,
             'title' => $this->resource->title,

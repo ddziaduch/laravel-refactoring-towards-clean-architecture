@@ -1,8 +1,8 @@
 <?php
 
-use Clean\Adapter\In\Http\CreateArticleHttpController;
-use Clean\Adapter\In\Http\CreateCommentController;
-use Clean\Adapter\In\Http\DeleteArticleHttpController;
+use Clean\Adapter\In\Http\Controller\CreateArticleHttpController;
+use Clean\Adapter\In\Http\Controller\CreateCommentController;
+use Clean\Adapter\In\Http\Controller\DeleteArticleHttpController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;

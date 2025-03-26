@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Clean\Adapter\In\Http;
+namespace Clean\Adapter\In\Http\Controller;
 
 use Clean\Application\Exception\ArticleDoesNotExist;
 use Clean\Application\Port\In\DeleteArticleUseCasePort;

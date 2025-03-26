@@ -1,6 +1,6 @@
 <?php
 
-namespace Clean\Application\Port\UseCase;
+namespace Clean\Application\Port\In;
 
 interface CreateCommentUseCasePort
 {

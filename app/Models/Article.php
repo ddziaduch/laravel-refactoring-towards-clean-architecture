@@ -74,11 +74,4 @@ class Article extends Model
             $q->whereRelation($relation, $column, $filters[$key]);
         });
     }
-
-    public function setTitleAttribute(string $title): void
-    {
-        $this->attributes['title'] = $title;
-
-        $this->attributes['slug'] = Str::slug($title);
-    }
 }

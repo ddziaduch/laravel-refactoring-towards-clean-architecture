@@ -2,19 +2,19 @@
 
 namespace App\Providers;
 
+use Clean\Adapter\Out\Eloquent\EloquentArticleRepository;
 use Clean\Adapter\Out\Eloquent\EloquentCommentRepository;
 use Clean\Adapter\Out\Eloquent\EloquentGetCommentReadModel;
-use Clean\Adapter\Out\EloquentArticleReadModelGetter;
-use Clean\Adapter\Out\EloquentArticleRepository;
+use Clean\Adapter\Out\Eloquent\EloquentArticleReadModelGetter;
 use Clean\Adapter\Out\StrSlugger;
 use Clean\Application\Port\In\CreateArticleUseCasePort;
 use Clean\Application\Port\In\DeleteArticleUseCasePort;
+use Clean\Application\Port\In\CreateCommentUseCasePort;
 use Clean\Application\Port\Out\ArticleReadModelGetter;
 use Clean\Application\Port\Out\ArticleRepository;
 use Clean\Application\Port\Out\CommentRepository;
 use Clean\Application\Port\Out\GetCommentReadModel;
 use Clean\Application\Port\Out\Slugger;
-use Clean\Application\Port\UseCase\CreateCommentUseCasePort;
 use Clean\Application\UseCase\CreateArticleUseCase;
 use Clean\Application\UseCase\CreateCommentUseCase;
 use Clean\Application\UseCase\DeleteArticleUseCase;
