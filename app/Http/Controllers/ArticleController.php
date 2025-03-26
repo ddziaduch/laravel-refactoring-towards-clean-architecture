@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Article\DestroyRequest;
 use App\Http\Requests\Article\FeedRequest;
 use App\Http\Requests\Article\IndexRequest;
 use App\Http\Requests\Article\StoreRequest;
@@ -12,6 +11,7 @@ use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use App\Models\User;
 use App\Services\ArticleService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -37,8 +37,14 @@ class ArticleController extends Controller
         return new ArticleCollection($this->article->getFiltered($request->validated()));
     }
 
-    public function show(Article $article): ArticleResource
+    /**
+     * @return ArticleResource | JsonResponse
+     */
+    public function show(Article $article)
     {
+        if ($article->is_removed) {
+            return new JsonResponse(null, 404);
+        }
         return $this->articleResponse($article);
     }
 
@@ -49,11 +55,6 @@ class ArticleController extends Controller
         $this->articleService->syncTags($article, $request->validated()['article']['tagList'] ?? []);
 
         return $this->articleResponse($article);
-    }
-
-    public function destroy(Article $article, DestroyRequest $request): void
-    {
-        $article->delete();
     }
 
     public function favorite(Article $article): ArticleResource

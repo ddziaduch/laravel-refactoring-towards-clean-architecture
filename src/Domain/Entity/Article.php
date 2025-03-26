@@ -16,6 +16,7 @@ final class Article
     private string $title;
     private string $description;
     private string $body;
+    private bool $removed = false;
 
     public function __construct(
         string $slug,
@@ -69,5 +70,20 @@ final class Article
     public function id(): ?int
     {
         return $this->id;
+    }
+
+    public function wasCreatedBy(int $authorId): bool
+    {
+        return $this->authorId === $authorId;
+    }
+
+    public function markAsRemoved(): void
+    {
+        $this->removed = true;
+    }
+
+    public function isRemoved(): bool
+    {
+        return $this->removed;
     }
 }
