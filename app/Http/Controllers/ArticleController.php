@@ -12,6 +12,7 @@ use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use App\Models\User;
 use App\Services\ArticleService;
+use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
@@ -41,20 +42,11 @@ class ArticleController extends Controller
         return $this->articleResponse($article);
     }
 
-    public function store(StoreRequest $request): ArticleResource
-    {
-        $article = auth()->user()->articles()->create($request->validated()['article']);
-
-        $this->syncTags($article);
-
-        return $this->articleResponse($article);
-    }
-
     public function update(Article $article, UpdateRequest $request): ArticleResource
     {
         $article->update($request->validated()['article']);
 
-        $this->syncTags($article);
+        $this->articleService->syncTags($article, $request->validated()['article']['tagList'] ?? []);
 
         return $this->articleResponse($article);
     }
@@ -76,11 +68,6 @@ class ArticleController extends Controller
         $article->users()->detach(auth()->id());
 
         return $this->articleResponse($article);
-    }
-    
-    protected function syncTags(Article $article): void
-    {
-        $this->articleService->syncTags($article, $this->request->validated()['article']['tagList'] ?? []);
     }
 
     protected function articleResponse(Article $article): ArticleResource

@@ -26,7 +26,7 @@ class CreateCommentController extends Controller
 
     public function __invoke(CreateCommentRequest $request): JsonResponse
     {
-        $id = $this->createCommentUseCasePort->cĻreate(
+        $id = $this->createCommentUseCasePort->create(
             $request->route('article'),
             $request->validated()['comment']['body'],
             $this->guard->id(),

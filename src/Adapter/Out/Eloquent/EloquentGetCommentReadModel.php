@@ -19,6 +19,7 @@ class EloquentGetCommentReadModel implements GetCommentReadModel
              $activeRecord->updated_at,
              $activeRecord->body,
              new ProfileReadModel(
+                 $activeRecord->user->id,
                  $activeRecord->user->username,
                  $activeRecord->user->bio,
                  $activeRecord->user->image,

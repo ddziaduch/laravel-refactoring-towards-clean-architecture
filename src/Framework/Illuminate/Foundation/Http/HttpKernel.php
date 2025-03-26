@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http;
+namespace Clean\Framework\Illuminate\Foundation\Http;
 
-use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Foundation\Http\Kernel as FramewotkHttpKernel;
 
-class Kernel extends HttpKernel
+class HttpKernel extends FramewotkHttpKernel
 {
     /**
      * The application's global HTTP middleware stack.

@@ -4,9 +4,17 @@ namespace App\Providers;
 
 use Clean\Adapter\Out\Eloquent\EloquentCommentRepository;
 use Clean\Adapter\Out\Eloquent\EloquentGetCommentReadModel;
+use Clean\Adapter\Out\EloquentArticleReadModelGetter;
+use Clean\Adapter\Out\EloquentArticleRepository;
+use Clean\Adapter\Out\StrSlugger;
+use Clean\Application\Port\In\CreateArticleUseCasePort;
+use Clean\Application\Port\Out\ArticleReadModelGetter;
+use Clean\Application\Port\Out\ArticleRepository;
 use Clean\Application\Port\Out\CommentRepository;
 use Clean\Application\Port\Out\GetCommentReadModel;
+use Clean\Application\Port\Out\Slugger;
 use Clean\Application\Port\UseCase\CreateCommentUseCasePort;
+use Clean\Application\UseCase\CreateArticleUseCase;
 use Clean\Application\UseCase\CreateCommentUseCase;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,9 +27,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(CreateCommentUseCasePort::class,CreateCommentUseCase::class);
+        $this->app->bind(ArticleReadModelGetter::class, EloquentArticleReadModelGetter::class);
+        $this->app->bind(ArticleRepository::class, EloquentArticleRepository::class);
         $this->app->bind(CommentRepository::class,EloquentCommentRepository::class);
+        $this->app->bind(CreateArticleUseCasePort::class, CreateArticleUseCase::class);
+        $this->app->bind(CreateCommentUseCasePort::class,CreateCommentUseCase::class);
         $this->app->bind(GetCommentReadModel::class,EloquentGetCommentReadModel::class);
+        $this->app->bind(Slugger::class, StrSlugger::class);
     }
 
     /**
