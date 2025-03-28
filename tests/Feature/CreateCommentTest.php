@@ -3,36 +3,44 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ArticleTest extends TestCase
+class CreateCommentTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testShowArticle()
+    public function testHappyPath()
     {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
         $article = Article::factory()->create();
 
-        $response = $this->get('api/articles/' . $article->slug)
-            ->assertExactJson([
-                'article' => [
-                    'slug' => $article->slug,
-                    'title' => $article->title,
-                    'body' => $article->body,
-                    'description' => $article->description,
-                    'tagList' => [],
-                    'createdAt' => $article->created_at,
-                    'updatedAt' => $article->updated_at,
-                    'favorited' => false,
-                    'favoritesCount' => 0,
-                    'author' => [
-                        'username' => $article->user->username,
-                        'bio' => $article->user->bio,
-                        'image' => $article->user->image,
-                        'following' => false
-                    ]
-                ]
-            ]);
+        $this->assertDatabaseCount('comments', 0);
+
+        $this->postJson('api/articles/' . $article->slug . '/comments', [
+            'comment' => [
+                'body' => 'test comment',
+            ]
+        ])
+            ->assertSuccessful();
+
+        $this->assertDatabaseHas('comments', [
+            'body' => 'test comment',
+        ]);
+        $this->assertDatabaseCount('comments', 1);
+    }
+
+    public function testFail()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $article = Article::factory()->create();
+
+        $response = $this->postJson('api/articles/' . $article->slug . '/comments')
+            ->assertStatus(422);
     }
 }

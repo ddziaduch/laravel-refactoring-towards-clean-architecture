@@ -8,14 +8,24 @@ use App\Http\Resources\CommentCollection;
 use App\Http\Resources\CommentResource;
 use App\Models\Article;
 use App\Models\Comment;
+use Clean\Application\CreateCommentUseCase;
+use Clean\Application\Port\Out\CommentReadModelFinder;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
     protected Comment $comment;
+    private CreateCommentUseCase $useCase;
+    private CommentReadModelFinder $commentReadModelFinder;
 
-    public function __construct(Comment $comment)
-    {
+    public function __construct(
+        Comment $comment,
+        CreateCommentUseCase $useCase,
+        CommentReadModelFinder $commentReadModelFinder
+    ) {
         $this->comment = $comment;
+        $this->useCase = $useCase;
+        $this->commentReadModelFinder = $commentReadModelFinder;
     }
 
     public function index(Article $article)
@@ -25,9 +35,15 @@ class CommentController extends Controller
 
     public function store(Article $article, StoreRequest $request)
     {
-        $comment = $article->comments()->create(['body' => $request->comment['body'], 'user_id' => auth()->id()]);
+        $id = ($this->useCase)(
+            $article->slug,
+            Auth::id(),
+            $request->get('comment')['body'],
+        );
 
-        return new CommentResource($comment);
+        $commentReadModel = $this->commentReadModelFinder->get($id);
+
+        return new CommentResource($commentReadModel);
     }
 
     public function destroy(Article $article, Comment $comment, DestroyRequest $request): void

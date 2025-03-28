@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Clean\Application\ReadModel\CommentReadModel;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CommentResource extends JsonResource
@@ -10,16 +11,21 @@ class CommentResource extends JsonResource
 
     public function toArray($request): array
     {
+        assert($this->resource instanceof CommentReadModel);
+
         return [
-            'id' => $this->id,
-            'createdAt' => $this->created_at,
-            'updatedAt' => $this->updated_at,
-            'body' => $this->body,
+            'id' => $this->resource->id,
+            'createdAt' => $this->resource->createdAt,
+            'updatedAt' => $this->resource->updatedAt,
+            'body' => $this->resource->body,
             'author' => [
-                'username' => $this->user->username,
-                'bio' => $this->user->bio,
-                'image' => $this->user->image,
-                'following' => $this->user->followers->contains(auth()->id())
+                'username' => $this->resource->author->username,
+                'bio' => $this->resource->author->bio,
+                'image' => $this->resource->author->image,
+                'following' => in_array(
+                    auth()->id(),
+                    $this->resource->author->followerIds
+                ),
             ]
         ];
     }

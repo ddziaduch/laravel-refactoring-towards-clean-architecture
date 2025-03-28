@@ -7,7 +7,6 @@ namespace Clean\Adapter\Out;
 use App\Models\Article;
 use Clean\Domain\Entity\Comment;
 use Clean\Domain\Port\Out\CommentRepository;
-use ReflectionClass;
 
 final class CommentEloquentRepository implements CommentRepository
 {
