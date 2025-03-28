@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Clean\Application;
 
+use Clean\Application\Port\In\CreateCommentUserCaseInterface;
 use Clean\Domain\Entity\Comment;
 use Clean\Domain\Port\Out\CommentRepository;
 
-final class CreateCommentUseCase
+final class CreateCommentUseCase implements CreateCommentUserCaseInterface
 {
     private CommentRepository $commentRepository;
 

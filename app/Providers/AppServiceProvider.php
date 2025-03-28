@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Clean\Adapter\Out\CommentEloquentRepository;
 use Clean\Adapter\Out\CommentReadModelEloquentFinder;
+use Clean\Application\CreateCommentUseCase;
+use Clean\Application\Port\In\CreateCommentUserCaseInterface;
 use Clean\Application\Port\Out\CommentReadModelFinder;
 use Clean\Domain\Port\Out\CommentRepository;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             CommentReadModelFinder::class,
             CommentReadModelEloquentFinder::class,
+        );
+
+        $this->app->bind(
+            CreateCommentUserCaseInterface::class,
+            CreateCommentUseCase::class,
         );
     }
 

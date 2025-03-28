@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\User;
+use Clean\Application\Port\In\CreateCommentUserCaseInterface;
+use Clean\Domain\Exception\ArticleNotFound;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -25,7 +27,12 @@ class CreateCommentTest extends TestCase
                 'body' => 'test comment',
             ]
         ])
-            ->assertSuccessful();
+            ->assertSuccessful()
+            ->assertJson([
+                'comment' => [
+                    'body' => 'test comment',
+                ]
+            ]);
 
         $this->assertDatabaseHas('comments', [
             'body' => 'test comment',
@@ -42,5 +49,25 @@ class CreateCommentTest extends TestCase
 
         $response = $this->postJson('api/articles/' . $article->slug . '/comments')
             ->assertStatus(422);
+    }
+
+    public function testFailsWhenArticleDoesntExist()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $useCase = $this->createMock(CreateCommentUserCaseInterface::class);
+        $useCase->expects($this->once())->method('__invoke')->willThrowException(
+            new ArticleNotFound()
+        );
+
+        $this->app->instance(CreateCommentUserCaseInterface::class, $useCase);
+
+        $this->postJson('api/articles/blabla/comments', [
+            'comment' => [
+                'body' => 'test comment',
+            ]
+        ])
+            ->assertStatus(404);
     }
 }
