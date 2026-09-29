@@ -1,37 +1,53 @@
-### Laravel implementation of RealWorld app
+# Refactoring Towards Clean Architecture — Laravel Workshop
 
-This Laravel app is part of the [RealWorld](https://github.com/gothinkster/realworld) project and implementation of the [Laravel best practices](https://github.com/alexeymezenin/laravel-best-practices).
+The backend is the Conduit RealWorld example application running on a standard Laravel 13 application skeleton. The `main` workshop baseline intentionally keeps the Laravel-style implementation; architectural refactoring belongs in separate workshop branches.
 
-You might also check [Ruby on Rails version](https://github.com/alexeymezenin/ruby-on-rails-realworld-example-app) of this app.
+## Requirements
 
-See how the exact same Medium.com clone (called [Conduit](https://demo.realworld.io)) is built using different [frontends](https://codebase.show/projects/realworld?category=frontend) and [backends](https://codebase.show/projects/realworld?category=backend). Yes, you can mix and match them, because **they all adhere to the same [API spec](https://gothinkster.github.io/realworld/docs/specs/backend-specs/introduction)**
+- Git
+- Docker with Docker Compose
+- `make`
 
-### How to run the API
+No host installation of PHP, Composer, or PostgreSQL is required.
 
-Make sure you have PHP and Composer installed globally on your computer.
+## Installation
 
-Clone the repo and enter the project folder
-
-```
-git clone https://github.com/alexeymezenin/laravel-realworld-example-app.git
-cd laravel-realworld-example-app
-```
-
-Install the app
-
-```
-composer install
-cp .env.example .env
+```bash
+git clone <repository-url>
+cd laravel-refactoring-towards-clean-architecture
+make install
 ```
 
-Run the web server
+`make install` builds the PHP image, installs Composer dependencies, starts PostgreSQL and the application, generates application and JWT secrets, runs migrations, and verifies the project with the test suite.
 
-```
-php artisan serve
+The API is available at <http://localhost:8001/api/articles>. The health endpoint is available at <http://localhost:8001/up>.
+
+## Common commands
+
+```bash
+make up                 # start the application and database
+make down               # stop containers
+make test               # run the test suite
+make shell              # open a shell in the PHP container
+make audit              # check Composer security advisories
+make format             # format PHP code with Pint
+make migrate            # run pending migrations
+make reset              # recreate and seed the database (destructive)
 ```
 
-That's it. Now you can use the api, i.e.
+## Database
 
-```
-http://127.0.0.1:8000/api/articles
-```
+The application and the test suite both run on the PostgreSQL container from `compose.yaml`.
+Tests use a separate `app_test` database so they never touch development data; it is created
+on a fresh volume by `docker/postgres/create-test-database.sh` and, for existing volumes, by
+`make test-db` (which `make test` runs for you). Every test case uses Laravel's
+`RefreshDatabase`, so each test runs inside a transaction that is rolled back afterwards and
+the test database is left clean.
+
+## Seed data
+
+`make reset` recreates the schema and loads deterministic fixtures: three users (`john`,
+`jane`, `alice` - all with the password `password`), six tagged articles, four comments, plus
+a few follows and favorites.
+
+Xdebug is installed in the development image but disabled by default. Enable it for a command or session with `XDEBUG_MODE=debug`.

@@ -8,6 +8,7 @@ use App\Models\Tag;
 class ArticleService
 {
     protected Article $article;
+
     protected Tag $tag;
 
     public function __construct(Article $article, Tag $tag)

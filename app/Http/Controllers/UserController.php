@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ConduitException;
 use App\Http\Requests\User\LoginRequest;
 use App\Http\Requests\User\StoreRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -22,13 +24,13 @@ class UserController extends Controller
         return $this->userResponse(auth()->getToken()->get());
     }
 
-    public function store(StoreRequest $request): array
+    public function store(StoreRequest $request): JsonResponse
     {
         $user = $this->user->create($request->validated()['user']);
 
         auth()->login($user);
 
-        return $this->userResponse(auth()->refresh());
+        return response()->json($this->userResponse(auth()->refresh()), Response::HTTP_CREATED);
     }
 
     public function update(UpdateRequest $request): array
@@ -44,11 +46,19 @@ class UserController extends Controller
             return $this->userResponse($token);
         }
 
-        abort(Response::HTTP_FORBIDDEN);
+        throw new ConduitException(['credentials' => ['invalid']], Response::HTTP_UNAUTHORIZED);
     }
 
     protected function userResponse(string $jwtToken): array
     {
-        return ['user' => ['token' => $jwtToken] + auth()->user()->toArray()];
+        $user = auth()->user();
+
+        return ['user' => [
+            'email' => $user->email,
+            'token' => $jwtToken,
+            'username' => $user->username,
+            'bio' => $user->bio,
+            'image' => $user->image,
+        ]];
     }
 }

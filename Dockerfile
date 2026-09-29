@@ -1,20 +1,24 @@
-FROM php:7.4-cli
+FROM php:8.4-cli-bookworm
 
-RUN apt-get update && apt-get install -y git libzip-dev zip unzip
-RUN docker-php-ext-install pdo zip
-RUN pecl channel-update pecl.php.net
-# RUN pecl install xdebug-3.1.5
-# RUN docker-php-ext-enable xdebug
+ARG INSTALL_XDEBUG=true
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git libpq-dev libzip-dev unzip \
+    && docker-php-ext-install pdo_pgsql pcntl zip \
+    && if [ "$INSTALL_XDEBUG" = "true" ]; then pecl install xdebug && docker-php-ext-enable xdebug; fi \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# default in the JetBrains IDE
 WORKDIR /opt/project
 
-COPY . .
+COPY composer.json composer.lock ./
+RUN composer install --no-interaction --prefer-dist --no-scripts --no-autoloader
 
-RUN composer install
+COPY . .
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 EXPOSE 8000
 
-CMD ["php", "artisan", "serve", "--port", "8000"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

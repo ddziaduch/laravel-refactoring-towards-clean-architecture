@@ -20,7 +20,7 @@ class ProfileController extends Controller
 
     public function follow(User $user): array
     {
-        auth()->user()->following()->attach($user->id);
+        auth()->user()->following()->syncWithoutDetaching($user->id);
 
         return $this->profileResponse($user);
     }
