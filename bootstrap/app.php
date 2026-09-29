@@ -1,55 +1,147 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Create The Application
-|--------------------------------------------------------------------------
-|
-| The first thing we will do is create a new Laravel application instance
-| which serves as the "glue" for all the components of Laravel, and is
-| the IoC container for the system binding all of the various parts.
-|
-*/
+use App\Exceptions\ConduitException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-$app = new Illuminate\Foundation\Application(
-    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
-);
+$formatErrors = static function (array $errors): array {
+    $formatted = [];
 
-/*
-|--------------------------------------------------------------------------
-| Bind Important Interfaces
-|--------------------------------------------------------------------------
-|
-| Next, we need to bind some important interfaces into the container so
-| we will be able to resolve them when needed. The kernels serve the
-| incoming requests to this application from both the web and CLI.
-|
-*/
+    foreach ($errors as $field => $messages) {
+        $formatted[Str::afterLast($field, '.')] = $messages;
+    }
 
-$app->singleton(
-    Illuminate\Contracts\Http\Kernel::class,
-    App\Http\Kernel::class
-);
+    return $formatted;
+};
 
-$app->singleton(
-    Illuminate\Contracts\Console\Kernel::class,
-    App\Console\Kernel::class
-);
+$conduitValidationErrors = static function (ValidationException $exception) use ($formatErrors): array {
+    $errors = $formatErrors($exception->errors());
 
-$app->singleton(
-    Illuminate\Contracts\Debug\ExceptionHandler::class,
-    App\Exceptions\Handler::class
-);
+    foreach ($exception->validator->failed() as $field => $rules) {
+        $field = Str::afterLast($field, '.');
 
-/*
-|--------------------------------------------------------------------------
-| Return The Application
-|--------------------------------------------------------------------------
-|
-| This script returns the application instance. The instance is given to
-| the calling script so we can separate the building of the instances
-| from the actual running of the application and sending responses.
-|
-*/
+        if (array_key_exists('Required', $rules)) {
+            $errors[$field] = ["can't be blank"];
+        } elseif (array_key_exists('Unique', $rules)) {
+            $errors[$field] = ['has already been taken'];
+        }
+    }
 
-return $app;
+    return $errors;
+};
+
+$resourceName = static function (Request $request, ?NotFoundHttpException $exception = null): string {
+    $previous = $exception?->getPrevious();
+
+    if ($previous instanceof ModelNotFoundException) {
+        return match (class_basename($previous->getModel())) {
+            'Article' => 'article',
+            'Comment' => 'comment',
+            'User' => 'profile',
+            default => 'resource',
+        };
+    }
+
+    if ($request->route('comment') !== null) {
+        return 'comment';
+    }
+
+    if ($request->is('api/articles/*')) {
+        return 'article';
+    }
+
+    if ($request->is('api/profiles/*')) {
+        return 'profile';
+    }
+
+    return 'resource';
+};
+
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->redirectGuestsTo(
+            fn (Request $request): ?string => $request->is('api/*') ? null : '/login',
+        );
+    })
+    ->withExceptions(function (Exceptions $exceptions) use ($conduitValidationErrors, $resourceName): void {
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request): bool => $request->is('api/*') || $request->expectsJson(),
+        );
+
+        $exceptions->render(function (ConduitException $exception, Request $request) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json(['errors' => $exception->errors], $exception->status);
+        });
+
+        $exceptions->render(function (AuthenticationException $exception, Request $request) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json(['errors' => ['token' => ['is missing']]], 401);
+        });
+
+        $exceptions->render(function (AuthorizationException $exception, Request $request) use ($resourceName) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json(['errors' => [$resourceName($request) => ['forbidden']]], 403);
+        });
+
+        $exceptions->render(function (AccessDeniedHttpException $exception, Request $request) use ($resourceName) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json(['errors' => [$resourceName($request) => ['forbidden']]], 403);
+        });
+
+        $exceptions->render(function (ValidationException $exception, Request $request) use ($conduitValidationErrors) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            $hasUniqueFailure = collect($exception->validator->failed())
+                ->contains(fn (array $rules): bool => array_key_exists('Unique', $rules));
+            $status = $request->isMethod('post') && $request->is('api/users') && $hasUniqueFailure
+                ? 409
+                : 422;
+
+            return response()->json(['errors' => $conduitValidationErrors($exception)], $status);
+        });
+
+        $exceptions->render(function (ModelNotFoundException $exception, Request $request) use ($resourceName) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json(['errors' => [$resourceName($request) => ['not found']]], 404);
+        });
+
+        $exceptions->render(function (NotFoundHttpException $exception, Request $request) use ($resourceName) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json(['errors' => [$resourceName($request, $exception) => ['not found']]], 404);
+        });
+    })->create();

@@ -13,7 +13,7 @@ class CommentFactory extends Factory
         return [
             'user_id' => User::factory(),
             'article_id' => Article::factory(),
-            'body' => $this->faker->text
+            'body' => $this->faker->text,
         ];
     }
 }

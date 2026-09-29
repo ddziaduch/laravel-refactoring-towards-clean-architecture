@@ -14,7 +14,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'comment.body' => 'required|string|max:2048'
+            'comment' => 'required|array',
+            'comment.body' => 'required|string|max:2048',
         ];
     }
 }

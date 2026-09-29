@@ -24,8 +24,8 @@ class ArticleResource extends JsonResource
                 'username' => $this->user->username,
                 'bio' => $this->user->bio,
                 'image' => $this->user->image,
-                'following' => $this->user->followers->contains(auth()->id())
-            ]
+                'following' => $this->user->followers->contains(auth()->id()),
+            ],
         ];
     }
 }

@@ -1,16 +1,16 @@
 <?php
 
+use App\Models\Article;
+use App\Models\Tag;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Article;
-use App\Models\Tag;
 
-class CreateArticleTagPivotTable extends Migration
+return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::create('article_tag', function (Blueprint $table) {
+        Schema::create('article_tag', function (Blueprint $table): void {
             $table->foreignIdFor(Article::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(Tag::class)->constrained()->onDelete('cascade');
 
@@ -18,8 +18,8 @@ class CreateArticleTagPivotTable extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('article_tag_pivot');
+        Schema::dropIfExists('article_tag');
     }
-}
+};

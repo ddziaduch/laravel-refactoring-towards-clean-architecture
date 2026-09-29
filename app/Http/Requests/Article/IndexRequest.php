@@ -17,8 +17,8 @@ class IndexRequest extends FormRequest
             'tag' => 'sometimes|string',
             'author' => 'sometimes|string',
             'favorited' => 'sometimes|string',
-            'limit' => 'sometimes|integer',
-            'offset' => 'sometimes|integer'
+            'limit' => 'sometimes|integer|min:1',
+            'offset' => 'sometimes|integer|min:0',
         ];
     }
 }

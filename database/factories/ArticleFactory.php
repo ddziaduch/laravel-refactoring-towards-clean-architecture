@@ -14,7 +14,7 @@ class ArticleFactory extends Factory
             'title' => $this->faker->sentence,
             'slug' => $this->faker->slug,
             'description' => $this->faker->text,
-            'body' => $this->faker->text
+            'body' => $this->faker->text,
         ];
     }
 }

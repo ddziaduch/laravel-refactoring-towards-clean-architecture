@@ -14,6 +14,8 @@ class Article extends Model
 {
     use HasFactory;
 
+    protected $dateFormat = 'Y-m-d H:i:s.u';
+
     protected $fillable = ['title', 'description', 'body'];
 
     public function getRouteKeyName(): string
@@ -41,16 +43,30 @@ class Article extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function getFiltered(array $filters): Collection
+    /**
+     * @return array{articles: Collection, count: int}
+     */
+    public function getFiltered(array $filters, ?User $feedFor = null): array
     {
-        return $this->filter($filters, 'tag', 'tags', 'name')
+        $query = $this->filter($filters, 'tag', 'tags', 'name')
             ->filter($filters, 'author', 'user', 'username')
-            ->filter($filters, 'favorited', 'users', 'username')
-            ->when(array_key_exists('offset', $filters), function ($q) use ($filters) {
-                $q->offset($filters['offset'])->limit($filters['limit']);
-            })
+            ->filter($filters, 'favorited', 'users', 'username');
+
+        if ($feedFor !== null) {
+            $query->whereIn('user_id', $feedFor->following()->pluck('users.id'));
+        }
+
+        $count = (clone $query)->count();
+        $articles = $query
+            ->latest('created_at')
+            ->latest('id')
+            ->offset($filters['offset'] ?? 0)
+            ->limit($filters['limit'] ?? 20)
             ->with('user', 'users', 'tags', 'user.followers')
+            ->withCount('users')
             ->get();
+
+        return ['articles' => $articles, 'count' => $count];
     }
 
     public function scopeFilter($query, array $filters, string $key, string $relation, string $column)
@@ -64,6 +80,17 @@ class Article extends Model
     {
         $this->attributes['title'] = $title;
 
-        $this->attributes['slug'] = Str::slug($title);
+        $baseSlug = Str::slug($title);
+        $slug = $baseSlug;
+        $suffix = 1;
+
+        while ($this->newQuery()
+            ->where('slug', $slug)
+            ->when($this->exists, fn ($query) => $query->whereKeyNot($this->getKey()))
+            ->exists()) {
+            $slug = $baseSlug.'-'.$suffix++;
+        }
+
+        $this->attributes['slug'] = $slug;
     }
 }

@@ -8,11 +8,18 @@ class ArticleCollection extends ResourceCollection
 {
     public static $wrap = '';
 
+    public $collects = ArticleListResource::class;
+
+    public function __construct($resource, protected int $articlesCount)
+    {
+        parent::__construct($resource);
+    }
+
     public function toArray($request): array
     {
         return [
             'articles' => $this->collection,
-            'articlesCount' => $this->count()
+            'articlesCount' => $this->articlesCount,
         ];
     }
 }

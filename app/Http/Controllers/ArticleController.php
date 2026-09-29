@@ -12,11 +12,14 @@ use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use App\Models\User;
 use App\Services\ArticleService;
+use Illuminate\Http\Response;
 
 class ArticleController extends Controller
 {
     protected Article $article;
+
     protected ArticleService $articleService;
+
     protected User $user;
 
     public function __construct(Article $article, ArticleService $articleService, User $user)
@@ -28,12 +31,16 @@ class ArticleController extends Controller
 
     public function index(IndexRequest $request): ArticleCollection
     {
-        return new ArticleCollection($this->article->getFiltered($request->validated()));
+        $result = $this->article->getFiltered($request->validated());
+
+        return new ArticleCollection($result['articles'], $result['count']);
     }
 
     public function feed(FeedRequest $request): ArticleCollection
     {
-        return new ArticleCollection($this->article->getFiltered($request->validated()));
+        $result = $this->article->getFiltered($request->validated(), auth()->user());
+
+        return new ArticleCollection($result['articles'], $result['count']);
     }
 
     public function show(Article $article): ArticleResource
@@ -43,30 +50,38 @@ class ArticleController extends Controller
 
     public function store(StoreRequest $request): ArticleResource
     {
-        $article = auth()->user()->articles()->create($request->validated()['article']);
+        $attributes = $request->validated()['article'];
 
-        $this->syncTags($article);
+        $article = auth()->user()->articles()->create($attributes);
+
+        $this->syncTags($article, $attributes['tagList'] ?? []);
 
         return $this->articleResponse($article);
     }
 
     public function update(Article $article, UpdateRequest $request): ArticleResource
     {
-        $article->update($request->validated()['article']);
+        $attributes = $request->validated()['article'];
 
-        $this->syncTags($article);
+        $article->update($attributes);
+
+        if (array_key_exists('tagList', $attributes)) {
+            $this->syncTags($article, $attributes['tagList']);
+        }
 
         return $this->articleResponse($article);
     }
 
-    public function destroy(Article $article, DestroyRequest $request): void
+    public function destroy(Article $article, DestroyRequest $request): Response
     {
         $article->delete();
+
+        return response()->noContent();
     }
 
     public function favorite(Article $article): ArticleResource
     {
-        $article->users()->attach(auth()->id());
+        $article->users()->syncWithoutDetaching(auth()->id());
 
         return $this->articleResponse($article);
     }
@@ -77,14 +92,16 @@ class ArticleController extends Controller
 
         return $this->articleResponse($article);
     }
-    
-    protected function syncTags(Article $article): void
+
+    protected function syncTags(Article $article, array $tags): void
     {
-        $this->articleService->syncTags($article, $this->request->validated()['article']['tagList'] ?? []);
+        $this->articleService->syncTags($article, $tags);
     }
 
     protected function articleResponse(Article $article): ArticleResource
     {
-        return new ArticleResource($article->load('user', 'users', 'tags', 'user.followers'));
+        return new ArticleResource(
+            $article->load('user', 'users', 'tags', 'user.followers')->loadCount('users'),
+        );
     }
 }

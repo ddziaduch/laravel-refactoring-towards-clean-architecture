@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UserFactory extends Factory
 {
-    public function definition()
+    public function definition(): array
     {
         return [
-            'username' => $this->faker->name(),
+            'username' => $this->faker->unique()->userName(),
             'email' => $this->faker->unique()->safeEmail(),
-            'password' => bcrypt('secret'),
+            // Hashed by User::setPasswordAttribute().
+            'password' => 'password',
             'image' => $this->faker->imageUrl,
-            'bio' => $this->faker->text
+            'bio' => $this->faker->text,
         ];
     }
 }

@@ -10,11 +10,11 @@ class ArticleTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testShowArticle()
+    public function test_show_article()
     {
         $article = Article::factory()->create();
 
-        $response = $this->get('api/articles/' . $article->slug)
+        $response = $this->get('api/articles/'.$article->slug)
             ->assertExactJson([
                 'article' => [
                     'slug' => $article->slug,
@@ -30,9 +30,9 @@ class ArticleTest extends TestCase
                         'username' => $article->user->username,
                         'bio' => $article->user->bio,
                         'image' => $article->user->image,
-                        'following' => false
-                    ]
-                ]
+                        'following' => false,
+                    ],
+                ],
             ]);
     }
 }
