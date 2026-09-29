@@ -22,6 +22,53 @@ make install
 
 The API is available at <http://localhost:8001/api/articles>. The health endpoint is available at <http://localhost:8001/up>.
 
+## Host installation (without Docker)
+
+Use this only if you cannot run Docker.
+
+**Additional prerequisites:** PHP 8.3+ with the `pdo_pgsql`, `pcntl` and `zip` extensions, Composer, PostgreSQL 16.
+
+1. Clone the repository (see above).
+2. Create the environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   Point the database settings at your local PostgreSQL instance. `DB_HOST=database` is the
+   Docker service name and will not resolve on the host:
+   ```
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=app
+   DB_USERNAME=<your user>
+   DB_PASSWORD=<your password>
+   ```
+3. Create the development and test databases (the test database name `app_test` is fixed in `phpunit.xml`):
+   ```bash
+   createdb app
+   createdb app_test
+   ```
+4. Install dependencies and generate secrets:
+   ```bash
+   composer install
+   php artisan key:generate
+   php artisan jwt:secret
+   ```
+5. Run migrations, optionally loading the seed data:
+   ```bash
+   php artisan migrate          # or: php artisan migrate:fresh --seed
+   ```
+6. Verify everything works:
+   ```bash
+   php artisan test
+   ```
+7. Start the application on the same port as the Docker setup:
+   ```bash
+   php artisan serve --port=8001
+   ```
+
+The `make` targets run inside the Docker containers, so they do not work in a host installation —
+use the `php artisan` / `composer` / `vendor/bin/pint` commands directly instead.
+
 ## Common commands
 
 ```bash
