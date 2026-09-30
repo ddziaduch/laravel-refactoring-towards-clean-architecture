@@ -3,11 +3,12 @@
 namespace Clean\Application\UseCase;
 
 use Clean\Application\Exception\ArticleNotFound;
+use Clean\Application\Port\Primary\CreateComment;
 use Clean\Application\Port\Secondary\ArticleRepository;
 use Clean\Application\Port\Secondary\CommentRepository;
 use Clean\Domain\Entity\Comment;
 
-final readonly class CreateCommentUseCase
+final readonly class CreateCommentUseCase implements CreateComment
 {
     public function __construct(
         private ArticleRepository $articleRepository,

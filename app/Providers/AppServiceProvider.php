@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use Clean\Adapter\Secondary\Eloquent\EloquentArticleRepository;
 use Clean\Adapter\Secondary\Eloquent\EloquentCommentRepository;
+use Clean\Application\Port\Primary\CreateComment;
 use Clean\Application\Port\Secondary\ArticleRepository;
 use Clean\Application\Port\Secondary\CommentRepository;
+use Clean\Application\UseCase\CreateCommentUseCase;
 use Illuminate\Support\ServiceProvider;
 use Tymon\JWTAuth\Http\Parser\AuthHeaders;
 use Tymon\JWTAuth\Http\Parser\Parser;
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(CreateComment::class, CreateCommentUseCase::class);
         $this->app->bind(ArticleRepository::class, EloquentArticleRepository::class);
         $this->app->bind(CommentRepository::class, EloquentCommentRepository::class);
 
