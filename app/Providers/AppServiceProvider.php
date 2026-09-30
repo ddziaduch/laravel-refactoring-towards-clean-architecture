@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use Clean\Adapter\Secondary\Eloquent\EloquentArticleRepository;
 use Clean\Adapter\Secondary\Eloquent\EloquentCommentRepository;
+use Clean\Application\Port\Secondary\ArticleRepository;
 use Clean\Application\Port\Secondary\CommentRepository;
 use Illuminate\Support\ServiceProvider;
 use Tymon\JWTAuth\Http\Parser\AuthHeaders;
@@ -15,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(ArticleRepository::class, EloquentArticleRepository::class);
         $this->app->bind(CommentRepository::class, EloquentCommentRepository::class);
 
         $this->app->extend('tymon.jwt.parser', function (Parser $parser): Parser {
