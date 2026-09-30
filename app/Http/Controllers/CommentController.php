@@ -29,9 +29,11 @@ class CommentController extends Controller
 
     public function store(Article $article, StoreRequest $request, CreateCommentUseCase $createComment)
     {
-        $comment = $createComment($article, $request->comment['body'], auth()->id());
+        $commentId = $createComment($article->id, $request->comment['body'], auth()->id());
 
-        return new CommentResource($comment->load('user.followers'));
+        return (new CommentResource($this->comment->findOrFail($commentId)->load('user.followers')))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     public function destroy(Article $article, Comment $comment, DestroyRequest $request): Response

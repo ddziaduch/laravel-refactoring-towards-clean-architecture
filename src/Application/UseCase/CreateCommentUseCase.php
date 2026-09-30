@@ -2,13 +2,16 @@
 
 namespace Clean\Application\UseCase;
 
-use App\Models\Article;
-use App\Models\Comment;
+use Clean\Application\Port\Secondary\CommentRepository;
 
-final class CreateCommentUseCase
+final readonly class CreateCommentUseCase
 {
-    public function __invoke(Article $article, string $body, int $authorId): Comment
+    public function __construct(
+        private CommentRepository $commentRepository,
+    ) {}
+
+    public function __invoke(int $articleId, string $body, int $authorId): int
     {
-        return $article->comments()->create(['body' => $body, 'user_id' => $authorId]);
+        return $this->commentRepository->save($articleId, $body, $authorId);
     }
 }
