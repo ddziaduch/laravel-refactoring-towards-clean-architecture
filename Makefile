@@ -1,4 +1,4 @@
-.PHONY: install build up down composer-install migrate reset seed test test-db shell audit format
+.PHONY: install build up down composer-install migrate reset seed test test-db deptrac shell audit format
 
 COMPOSE = docker compose
 EXEC = $(COMPOSE) exec app
@@ -41,6 +41,9 @@ test: test-db
 
 test-db:
 	@$(COMPOSE) exec -T database /docker-entrypoint-initdb.d/10-create-test-database.sh
+
+deptrac:
+	$(EXEC) vendor/bin/deptrac analyse
 
 shell:
 	$(EXEC) bash

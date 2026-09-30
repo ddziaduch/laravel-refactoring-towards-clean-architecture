@@ -22,6 +22,8 @@ make install
 
 The API is available at <http://localhost:8001/api/articles>. The health endpoint is available at <http://localhost:8001/up>.
 
+The API contract is described by the RealWorld Conduit API v2 specification in [`openapi.yml`](openapi.yml).
+
 ## Host installation (without Docker)
 
 Use this only if you cannot run Docker.
@@ -75,6 +77,7 @@ use the `php artisan` / `composer` / `vendor/bin/pint` commands directly instead
 make up                 # start the application and database
 make down               # stop containers
 make test               # run the test suite
+make deptrac            # check architectural layer dependencies
 make shell              # open a shell in the PHP container
 make audit              # check Composer security advisories
 make format             # format PHP code with Pint
