@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Clean\Adapter\Primary\Cli\CreateCommentCommand;
 use Clean\Adapter\Secondary\Eloquent\EloquentArticleRepository;
 use Clean\Adapter\Secondary\Eloquent\EloquentCommentRepository;
 use Clean\Adapter\Secondary\Eloquent\EloquentGetCommentReadModel;
@@ -23,4 +24,11 @@ class CleanArchitectureServiceProvider extends ServiceProvider
         CommentRepository::class => EloquentCommentRepository::class,
         GetCommentReadModel::class => EloquentGetCommentReadModel::class,
     ];
+
+    public function boot(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([CreateCommentCommand::class]);
+        }
+    }
 }
