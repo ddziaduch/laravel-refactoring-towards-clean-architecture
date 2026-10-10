@@ -7,10 +7,12 @@ use Clean\Adapter\Secondary\Eloquent\EloquentArticleRepository;
 use Clean\Adapter\Secondary\Eloquent\EloquentCommentRepository;
 use Clean\Adapter\Secondary\Eloquent\EloquentGetCommentReadModel;
 use Clean\Application\Port\Primary\CreateComment;
+use Clean\Application\Port\Primary\DeleteComment;
 use Clean\Application\Port\Secondary\ArticleRepository;
 use Clean\Application\Port\Secondary\CommentRepository;
 use Clean\Application\Port\Secondary\GetCommentReadModel;
 use Clean\Application\UseCase\CreateCommentUseCase;
+use Clean\Application\UseCase\DeleteCommentUseCase;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -20,6 +22,7 @@ class CleanArchitectureServiceProvider extends ServiceProvider
 {
     public array $bindings = [
         CreateComment::class => CreateCommentUseCase::class,
+        DeleteComment::class => DeleteCommentUseCase::class,
         ArticleRepository::class => EloquentArticleRepository::class,
         CommentRepository::class => EloquentCommentRepository::class,
         GetCommentReadModel::class => EloquentGetCommentReadModel::class,

@@ -3,8 +3,6 @@
 namespace Tests\Unit;
 
 use Clean\Application\Exception\ArticleNotFound;
-use Clean\Application\Port\Secondary\ArticleRepository;
-use Clean\Application\Port\Secondary\CommentRepository;
 use Clean\Application\UseCase\CreateCommentUseCase;
 use Clean\Domain\Entity\Comment;
 use Clean\Domain\Exception\CommentBodyCannotBeEmpty;
@@ -49,34 +47,5 @@ class CreateCommentUseCaseTest extends TestCase
         $this->expectException(CommentBodyCannotBeEmpty::class);
 
         ($this->createComment)('an-article', '   ', 3);
-    }
-}
-
-final readonly class InMemoryArticleRepository implements ArticleRepository
-{
-    /**
-     * @param  array<string, int>  $idsBySlug
-     */
-    public function __construct(private array $idsBySlug) {}
-
-    public function findIdBySlug(string $slug): ?int
-    {
-        return $this->idsBySlug[$slug] ?? null;
-    }
-}
-
-final class InMemoryCommentRepository implements CommentRepository
-{
-    /**
-     * @var array<int, Comment>
-     */
-    public array $saved = [];
-
-    public function save(Comment $comment): int
-    {
-        $id = count($this->saved) + 1;
-        $this->saved[$id] = $comment;
-
-        return $id;
     }
 }

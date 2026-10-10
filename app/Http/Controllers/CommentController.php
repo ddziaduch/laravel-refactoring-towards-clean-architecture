@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Comment\DestroyRequest;
 use App\Http\Resources\CommentCollection;
 use App\Models\Article;
 use App\Models\Comment;
-use Illuminate\Http\Response;
 
 class CommentController extends Controller
 {
@@ -22,12 +20,5 @@ class CommentController extends Controller
         return new CommentCollection(
             $article->comments()->with('user.followers')->get(),
         );
-    }
-
-    public function destroy(Article $article, Comment $comment, DestroyRequest $request): Response
-    {
-        $comment->delete();
-
-        return response()->noContent();
     }
 }
