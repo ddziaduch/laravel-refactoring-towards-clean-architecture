@@ -8,7 +8,8 @@ interface CommentRepository
 {
     public function find(int $commentId): ?Comment;
 
+    /**
+     * Inserts a new comment or updates an existing one, and returns its ID.
+     */
     public function save(Comment $comment): int;
-
-    public function delete(int $commentId): void;
 }

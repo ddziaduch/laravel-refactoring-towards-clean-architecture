@@ -21,13 +21,12 @@ final class InMemoryCommentRepository implements CommentRepository
 
     public function save(Comment $comment): int
     {
-        $this->saved[++$this->lastId] = $comment;
+        if ($comment->id === null) {
+            $comment = new Comment($comment->articleId, $comment->authorId, $comment->body, ++$this->lastId);
+        }
 
-        return $this->lastId;
-    }
+        $this->saved[$comment->id] = $comment;
 
-    public function delete(int $commentId): void
-    {
-        unset($this->saved[$commentId]);
+        return $comment->id;
     }
 }

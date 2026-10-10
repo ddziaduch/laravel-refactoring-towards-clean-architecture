@@ -4,13 +4,16 @@ namespace Clean\Domain\Entity;
 
 use Clean\Domain\Exception\CommentBodyCannotBeEmpty;
 use Clean\Domain\Exception\OnlyAuthorCanDeleteComment;
+use DateTimeImmutable;
 
-final readonly class Comment
+final class Comment
 {
     public function __construct(
-        public int $articleId,
-        public int $authorId,
-        public string $body,
+        public readonly int $articleId,
+        public readonly int $authorId,
+        public readonly string $body,
+        public readonly ?int $id = null,
+        private ?DateTimeImmutable $deletedAt = null,
     ) {
         if (trim($body) === '') {
             throw new CommentBodyCannotBeEmpty;
@@ -20,10 +23,22 @@ final readonly class Comment
     /**
      * @throws OnlyAuthorCanDeleteComment
      */
-    public function ensureCanBeDeletedBy(int $userId): void
+    public function deleteBy(int $userId, DateTimeImmutable $now): void
     {
         if ($userId !== $this->authorId) {
             throw new OnlyAuthorCanDeleteComment;
         }
+
+        $this->deletedAt = $now;
+    }
+
+    public function deletedAt(): ?DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deletedAt !== null;
     }
 }

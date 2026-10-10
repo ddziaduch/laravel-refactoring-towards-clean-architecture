@@ -28,7 +28,7 @@ class CreateCommentUseCaseTest extends TestCase
         $commentId = ($this->createComment)('an-article', 'A useful comment', 3);
 
         $this->assertSame(1, $commentId);
-        $this->assertEquals([1 => new Comment(7, 3, 'A useful comment')], $this->comments->saved);
+        $this->assertEquals([1 => new Comment(7, 3, 'A useful comment', 1)], $this->comments->saved);
     }
 
     public function test_it_rejects_a_missing_article(): void

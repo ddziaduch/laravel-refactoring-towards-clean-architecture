@@ -18,7 +18,7 @@ class CommentController extends Controller
     public function index(Article $article)
     {
         return new CommentCollection(
-            $article->comments()->with('user.followers')->get(),
+            $article->comments()->whereNull('deleted_at')->with('user.followers')->get(),
         );
     }
 }
