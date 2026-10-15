@@ -40,7 +40,7 @@ test: test-db
 	$(EXEC) php artisan test
 
 test-db:
-	@$(COMPOSE) exec -T database /docker-entrypoint-initdb.d/10-create-test-database.sh
+	@$(COMPOSE) exec -T database sh < docker/postgres/create-test-database.sh
 
 deptrac:
 	$(EXEC) vendor/bin/deptrac analyse
