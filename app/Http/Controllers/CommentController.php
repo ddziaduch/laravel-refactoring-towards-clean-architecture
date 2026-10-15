@@ -8,6 +8,7 @@ use App\Http\Resources\CommentCollection;
 use App\Http\Resources\CommentResource;
 use App\Models\Article;
 use App\Models\Comment;
+use Clean\Application\UseCase\AddCommentUseCase;
 use Illuminate\Http\Response;
 
 class CommentController extends Controller
@@ -26,9 +27,13 @@ class CommentController extends Controller
         );
     }
 
-    public function store(Article $article, StoreRequest $request)
+    public function store(Article $article, StoreRequest $request, AddCommentUseCase $useCase)
     {
-        $comment = $article->comments()->create(['body' => $request->comment['body'], 'user_id' => auth()->id()]);
+        $comment = $useCase->add(
+            $article,
+            $request->comment['body'],
+            auth()->id(),
+        );
 
         return new CommentResource($comment->load('user.followers'));
     }
