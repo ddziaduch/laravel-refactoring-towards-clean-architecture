@@ -27,15 +27,19 @@ class CommentController extends Controller
         );
     }
 
-    public function store(Article $article, StoreRequest $request, AddCommentUseCase $useCase)
+    public function store(string $articleSlug, StoreRequest $request, AddCommentUseCase $useCase)
     {
-        $comment = $useCase->add(
-            $article,
+        $commentId = $useCase->add(
+            $articleSlug,
             $request->comment['body'],
             auth()->id(),
         );
 
-        return new CommentResource($comment->load('user.followers'));
+        return (new CommentResource(
+            Comment::query()
+                ->findOrFail($commentId)
+                ->load('user.followers'),
+        ))->response()->setStatusCode(Response::HTTP_CREATED);
     }
 
     public function destroy(Article $article, Comment $comment, DestroyRequest $request): Response
