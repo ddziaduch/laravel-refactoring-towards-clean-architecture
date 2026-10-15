@@ -6,18 +6,19 @@ namespace Clean\Adapter\Outgoing;
 
 use App\Models\Article;
 use Clean\Application\Port\Outgoing\CommentRepository;
+use Clean\Domain\Entity\Comment;
 
 final class LaravelCommentRepository implements CommentRepository
 {
-    public function save(string $slug, string $body, int $authorId): int
+    public function save(Comment $comment): int
     {
         $comment = Article::query()
-            ->where(['slug' => $slug])
-            ->firstOrFail()
+            ->where(['slug' => $comment->articleSlug])
+            ->first()
             ->comments()
             ->create([
-                'body' => $body,
-                'user_id' => $authorId,
+                'body' => $comment->body,
+                'user_id' => $comment->authorId,
             ]);
 
         return $comment->id;

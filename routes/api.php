@@ -5,6 +5,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
+use Clean\Adapter\Ingoing\Http\AddCommentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('profiles/{user}', [ProfileController::class, 'show']);
@@ -42,7 +43,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('articles')->group(function () {
-        Route::post('{article}/comments', [CommentController::class, 'store']);
+        Route::post('{article}/comments', [AddCommentController::class, 'store']);
         Route::delete('{article}/comments/{comment}', [CommentController::class, 'destroy'])
             ->scopeBindings();
     });
