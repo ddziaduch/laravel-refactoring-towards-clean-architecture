@@ -1,0 +1,73 @@
+# Two kinds of boundaries are enforced here:
+#
+# 1. Layers inside a module (clean architecture):
+#    Domain <- Application <- Adapter. The Application implements its own PublicApi.
+#    Only adapters may touch the framework.
+#
+# 2. Modules (bounded contexts):
+#    a module may use another module ONLY through that module's PublicApi,
+#    and ONLY from its adapters (anti-corruption layer). The allowed directions are
+#    Engagement -> Article -> Profile -> Identity, and Engagement -> Profile.
+deptrac:
+  paths:
+    - ./src
+
+  layers:
+    - name: Identity.Domain
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Identity\\Domain\\#' }]
+    - name: Identity.Application
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Identity\\Application\\#' }]
+    - name: Identity.PublicApi
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Identity\\PublicApi\\#' }]
+    - name: Identity.Adapter
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Identity\\Adapter\\#' }]
+
+    - name: Profile.Domain
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Profile\\Domain\\#' }]
+    - name: Profile.Application
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Profile\\Application\\#' }]
+    - name: Profile.PublicApi
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Profile\\PublicApi\\#' }]
+    - name: Profile.Adapter
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Profile\\Adapter\\#' }]
+
+    - name: Article.Domain
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Article\\Domain\\#' }]
+    - name: Article.Application
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Article\\Application\\#' }]
+    - name: Article.PublicApi
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Article\\PublicApi\\#' }]
+    - name: Article.Adapter
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Article\\Adapter\\#' }]
+
+    - name: Engagement.Domain
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Engagement\\Domain\\#' }]
+    - name: Engagement.Application
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Engagement\\Application\\#' }]
+    - name: Engagement.Adapter
+      collectors: [{ type: classNameRegex, value: '#^Conduit\\Engagement\\Adapter\\#' }]
+
+    - name: Framework
+      collectors: [{ type: classNameRegex, value: '#^(App|Illuminate|Symfony|Tymon|Carbon)\\#' }]
+
+  ruleset:
+    Identity.Domain: ~
+    Identity.Application: [Identity.Domain, Identity.PublicApi]
+    Identity.PublicApi: ~
+    Identity.Adapter: [Identity.Domain, Identity.Application, Identity.PublicApi, Framework]
+
+    Profile.Domain: ~
+    Profile.Application: [Profile.Domain, Profile.PublicApi]
+    Profile.PublicApi: ~
+    Profile.Adapter: [Profile.Domain, Profile.Application, Profile.PublicApi, Framework, Identity.PublicApi]
+
+    Article.Domain: ~
+    Article.Application: [Article.Domain, Article.PublicApi]
+    Article.PublicApi: ~
+    Article.Adapter: [Article.Domain, Article.Application, Article.PublicApi, Framework, Profile.PublicApi]
+
+    Engagement.Domain: ~
+    Engagement.Application: [Engagement.Domain]
+    Engagement.Adapter: [Engagement.Domain, Engagement.Application, Framework, Article.PublicApi, Profile.PublicApi]
+
+    Framework: ~

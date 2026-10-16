@@ -1,16 +1,13 @@
 <?php
 
 use App\Exceptions\ConduitException;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 $formatErrors = static function (array $errors): array {
@@ -39,22 +36,9 @@ $conduitValidationErrors = static function (ValidationException $exception) use 
     return $errors;
 };
 
-$resourceName = static function (Request $request, ?NotFoundHttpException $exception = null): string {
-    $previous = $exception?->getPrevious();
-
-    if ($previous instanceof ModelNotFoundException) {
-        return match (class_basename($previous->getModel())) {
-            'Article' => 'article',
-            'Comment' => 'comment',
-            'User' => 'profile',
-            default => 'resource',
-        };
-    }
-
-    if ($request->route('comment') !== null) {
-        return 'comment';
-    }
-
+// Modules translate their own "not found" and "forbidden" cases into ConduitException.
+// This only names the resource of a URL that matched no route at all.
+$resourceName = static function (Request $request): string {
     if ($request->is('api/articles/*')) {
         return 'article';
     }
@@ -69,7 +53,6 @@ $resourceName = static function (Request $request, ?NotFoundHttpException $excep
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
@@ -99,22 +82,6 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json(['errors' => ['token' => ['is missing']]], 401);
         });
 
-        $exceptions->render(function (AuthorizationException $exception, Request $request) use ($resourceName) {
-            if (! $request->is('api/*')) {
-                return null;
-            }
-
-            return response()->json(['errors' => [$resourceName($request) => ['forbidden']]], 403);
-        });
-
-        $exceptions->render(function (AccessDeniedHttpException $exception, Request $request) use ($resourceName) {
-            if (! $request->is('api/*')) {
-                return null;
-            }
-
-            return response()->json(['errors' => [$resourceName($request) => ['forbidden']]], 403);
-        });
-
         $exceptions->render(function (ValidationException $exception, Request $request) use ($conduitValidationErrors) {
             if (! $request->is('api/*')) {
                 return null;
@@ -129,19 +96,11 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json(['errors' => $conduitValidationErrors($exception)], $status);
         });
 
-        $exceptions->render(function (ModelNotFoundException $exception, Request $request) use ($resourceName) {
-            if (! $request->is('api/*')) {
-                return null;
-            }
-
-            return response()->json(['errors' => [$resourceName($request) => ['not found']]], 404);
-        });
-
         $exceptions->render(function (NotFoundHttpException $exception, Request $request) use ($resourceName) {
             if (! $request->is('api/*')) {
                 return null;
             }
 
-            return response()->json(['errors' => [$resourceName($request, $exception) => ['not found']]], 404);
+            return response()->json(['errors' => [$resourceName($request) => ['not found']]], 404);
         });
     })->create();
