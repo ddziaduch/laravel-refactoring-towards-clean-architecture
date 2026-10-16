@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace Conduit\Identity\Adapter\Primary\Http;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+final class LogInRequest extends FormRequest
 {
     public function authorize(): bool
     {

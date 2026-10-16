@@ -4,17 +4,11 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TagController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('profiles/{user}', [ProfileController::class, 'show']);
 Route::get('tags', [TagController::class, 'index']);
 Route::get('articles/{article}/comments', [CommentController::class, 'index']);
-
-Route::prefix('users')->group(function () {
-    Route::post('/', [UserController::class, 'store']);
-    Route::post('login', [UserController::class, 'login']);
-});
 
 Route::prefix('articles')->group(function () {
     Route::get('/', [ArticleController::class, 'index']);
@@ -23,11 +17,6 @@ Route::prefix('articles')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::prefix('user')->group(function () {
-        Route::get('/', [UserController::class, 'show']);
-        Route::put('/', [UserController::class, 'update']);
-    });
-
     Route::prefix('profiles')->group(function () {
         Route::post('{user}/follow', [ProfileController::class, 'follow']);
         Route::delete('{user}/follow', [ProfileController::class, 'unfollow']);
