@@ -3,12 +3,12 @@
 namespace Conduit\Profile\Adapter\Primary\Http;
 
 use App\Exceptions\ConduitException;
+use Closure;
 use Conduit\Profile\Application\Exception\ProfileNotFound;
 use Conduit\Profile\Application\Port\Primary\FollowUser;
 use Conduit\Profile\Application\Port\Primary\GetProfile;
 use Conduit\Profile\Application\Port\Primary\UnfollowUser;
 use Conduit\Profile\Application\ReadModel\ProfileReadModel;
-use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

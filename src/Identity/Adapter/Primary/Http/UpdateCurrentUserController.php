@@ -4,7 +4,6 @@ namespace Conduit\Identity\Adapter\Primary\Http;
 
 use Conduit\Identity\Application\Port\Primary\UpdateUser;
 use Conduit\Identity\Application\ReadModel\AuthenticatedUser;
-use Illuminate\Http\Request;
 use Tymon\JWTAuth\JWTAuth;
 
 final readonly class UpdateCurrentUserController
