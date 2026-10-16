@@ -2,8 +2,10 @@
 
 use App\Providers\AppServiceProvider;
 use Conduit\Identity\Adapter\Laravel\IdentityServiceProvider;
+use Conduit\Profile\Adapter\Laravel\ProfileServiceProvider;
 
 return [
     AppServiceProvider::class,
     IdentityServiceProvider::class,
+    ProfileServiceProvider::class,
 ];
